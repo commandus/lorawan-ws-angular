@@ -8,6 +8,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
+import { FormsModule } from '@angular/forms';
+
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatOptionModule } from '@angular/material/core';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
@@ -66,13 +68,14 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     AppRoutingModule,
     BrowserAnimationsModule,
 
+    FormsModule,
+
     HttpClientModule, FlexLayoutModule,
     MatCheckboxModule, MatListModule, MatChipsModule, MatToolbarModule, MatButtonModule,
     MatDatepickerModule, MatNativeDateModule, MatIconModule, MatSelectModule, MatOptionModule,
     MatFormFieldModule, MatInputModule, MatProgressBarModule, MatRadioModule,
     MatTableModule, MatSortModule, MatExpansionModule, MatAutocompleteModule, MatPaginatorModule, 
     MatDialogModule, MatChipsModule, MatSnackBarModule, MatTooltipModule, MatSlideToggleModule
-
   ],
   providers: [
     {

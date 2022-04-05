@@ -1,0 +1,43 @@
+.mat-row {
+	height: auto;
+}
+
+.mat-cell {
+	padding-left: 5pt;
+	padding-right: 5pt;
+}
+
+table {
+	width: 100%;
+}
+
+.mat-row:hover {
+	background-color: #ddd;
+}
+
+a {
+	color: grey
+}
+
+.filter {
+	padding-left: 15pt;
+	padding-right: 5pt;
+}
+
+.packetTypeSelector {
+	padding-left: 15pt;
+}
+
+.detail-row {
+	height: 0;
+	overflow: hidden;
+	display: flex;
+}
+
+.mat-column-id {
+	width: 5pt !important;	
+}
+
+.mat-column-no {
+	width: 5pt !important;	
+}

@@ -3,7 +3,7 @@ import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { RawRecord } from '../model/rawrecord';
+import { TemperatureRecord } from '../model/temperaturerecord';
 import { ResponseCount } from '../model/responsecount';
 
 import { config } from '../config';
@@ -11,11 +11,12 @@ import { config } from '../config';
 @Injectable({
   providedIn: 'root'
 })
-export class RawService {
+export class TemperatureService {
 
   constructor(private httpClient: HttpClient) { }
 
   mkQuery(q: string, devName: string, startDate: number, finishDate: number, packet: string): string {
+    /*
     if (startDate)
       q += '&received-ge=' + startDate;
     if (finishDate)
@@ -24,21 +25,22 @@ export class RawService {
       q += '&devname-like=' + devName + '%';
     if (packet.length)
       q += '&raw-like=' + packet + '%';
+      */
     return q;
   }
 
   list(devName: string, startDate: number, finishDate: number, packet: string,
     ofs: number, pagesize: number): Observable<any> {
-    return this.httpClient.get(config.endpoint.raw.url
+    return this.httpClient.get<TemperatureRecord[]>(config.endpoint.t.url
       + this.mkQuery('?o=' + ofs + '&s=' + pagesize, devName, startDate, finishDate, packet))
       .pipe(
-        map(function(response: any) {
+        map(function(response: TemperatureRecord[]) {
           return response;
       }));
     }
 
   count(devName: string, startDate: any, finishDate: any, packet: any): Observable<number> {
-    return this.httpClient.get<ResponseCount[]>(config.endpoint.raw_count.url
+    return this.httpClient.get<ResponseCount[]>(config.endpoint.t_count.url
       + this.mkQuery('?', devName, startDate, finishDate, packet))
     .pipe(
       map(function(response: ResponseCount[]) {
@@ -47,18 +49,18 @@ export class RawService {
   }
 
   get(id: number): Observable<any> {
-    return this.httpClient.get(config.endpoint.raw_id.url + '?id=' + id);
+    return this.httpClient.get(config.endpoint.t_id.url + '?id=' + id);
   }
 
-  add(value: RawRecord): Observable<any> {
-    return this.httpClient.post(config.endpoint.raw.url, value);
+  add(value: TemperatureRecord): Observable<any> {
+    return this.httpClient.post(config.endpoint.t.url, value);
   }
 
   rm(id: number): Observable<any> {
-    return this.httpClient.delete(config.endpoint.raw.url + '?id=' + id);
+    return this.httpClient.delete(config.endpoint.t.url + '?id=' + id);
   }
 
-  update(value: RawRecord): Observable<any> {
-    return this.httpClient.put(config.endpoint.raw.url, value);
+  update(value: TemperatureRecord): Observable<any> {
+    return this.httpClient.put(config.endpoint.t.url, value);
   }
 }

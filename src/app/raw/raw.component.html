@@ -1,61 +1,66 @@
-<mat-progress-bar *ngIf="values.loading | async" mode="indeterminate"></mat-progress-bar>
-<mat-form-field class="filter">
-  <input matInput placeholder="Фильтр" #filter>
-</mat-form-field>
-
-<mat-form-field  class="filter">
-  <input matInput [matDatepicker]="dpCreated" placeholder="От" (dateChange)="createdChange($event.value)" #createdDate>
-  <mat-datepicker-toggle matSuffix [for]="dpCreated"></mat-datepicker-toggle>
-  <mat-datepicker #dpCreated></mat-datepicker>
-</mat-form-field>
-<mat-form-field  class="filter">
-  <input matInput [matDatepicker]="dpDeliverydate" placeholder="Доставка" (dateChange)="deliveryChange($event.value)" #deliveryDate>
-  <mat-datepicker-toggle matSuffix [for]="dpDeliverydate"></mat-datepicker-toggle>
-  <mat-datepicker #dpDeliverydate></mat-datepicker>
-</mat-form-field>
-
-<button color="primary" mat-button (click)="resetFilter()">Сбросить</button>  
-<div>
-  <div fxFlex>
-      <div fxLayout="row" fxLayoutAlign="stretch" >
-        <mat-chip-list>
-          <mat-chip tag="0" (click)="onGoodsFilterSelection(0)"> Все </mat-chip>
-          <mat-chip *ngFor="let g of goods" (click)="onGoodsFilterSelection(g)" >
-            {{g}
-          </mat-chip>
-        </mat-chip-list>
-      </div>
-  </div>
+<div style="height: 10pt;">
+	<mat-progress-bar *ngIf="values.loading | async" mode="indeterminate"></mat-progress-bar>
 </div>
+<div fxLayout="row" fxLayoutAlign="start stretch">
+	<button color="accent" mat-button (click)="load()">Пакеты</button>  
+    <button color="primary" mat-button (click)="showTemperature()">Температуры</button>  
+</div>
+
+<div>
+	<mat-form-field class="filter">
+	<input matInput placeholder="Устройство" #filterDevName>
+	</mat-form-field>
+	<mat-form-field  class="filter">
+	<input matInput [matDatepicker]="dpStart" placeholder="Время от" (dateChange)="startChange($event.value)" #startDate>
+	<mat-datepicker-toggle matSuffix [for]="dpStart"></mat-datepicker-toggle>
+	<mat-datepicker #dpStart></mat-datepicker>
+	</mat-form-field>
+	<mat-form-field  class="filter">
+	<input matInput [matDatepicker]="dpFinish" placeholder="до" (dateChange)="finishChange($event.value)" #finishDate>
+	<mat-datepicker-toggle matSuffix [for]="dpFinish"></mat-datepicker-toggle>
+	<mat-datepicker #dpFinish></mat-datepicker>
+	</mat-form-field>
+
+	<button color="primary" mat-button (click)="resetFilter()">Сбросить</button>  
+</div>
+
+<div class="packetTypeSelector">
+	<div fxFlex>
+		<div fxLayout="row" fxLayoutAlign="stretch" >
+		  <mat-chip-list>
+			  <mat-chip (click)="filterRaw('')"> Все типы </mat-chip>
+			  <mat-chip (click)="filterRaw('4a')"> 4a </mat-chip>
+			  <mat-chip (click)="filterRaw('4b')"> 4b </mat-chip>
+		  </mat-chip-list>
+		</div>
+	</div>
+</div>
+
 <div>
   <table mat-table [dataSource]="values" matSort>
-    <ng-container matColumnDef="state">
-      <th mat-header-cell *matHeaderCellDef> Пакеты </th>
-      <td mat-cell *matCellDef="let v">  
-        <mat-chip-list>
-          <mat-chip></mat-chip>
-        </mat-chip-list>
-      </td>
-    </ng-container>
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef> № </th>
       <td class="small" mat-cell *matCellDef="let v">{{v.id}}</td>
     </ng-container>
-    <ng-container matColumnDef="raw">
-        <th mat-header-cell *matHeaderCellDef> Hex </th>
-        <td mat-cell *matCellDef="let v">{{v.deliverydate * 1000 | date : 'dd.MM.yyyy'}}</td>
-      </ng-container>
-    
-    <ng-container matColumnDef="notes">
-      <th mat-header-cell *matHeaderCellDef> Пометки  </th>
-      <td mat-cell *matCellDef="let v"> {{v.notes}} </td>
+	<ng-container matColumnDef="received">
+		<th mat-header-cell *matHeaderCellDef> Время </th>
+		<td mat-cell *matCellDef="let v">{{ +v.received * 1000 | date : 'dd.MM.yyyy HH:mm:ss ZZZZZ'}}</td>
+	</ng-container>
+	<ng-container matColumnDef="devname">
+      <th mat-header-cell *matHeaderCellDef> Устройство  </th>
+      <td mat-cell *matCellDef="let v"> {{v.devname}} </td>
     </ng-container>
+    <ng-container matColumnDef="raw">
+		<th mat-header-cell *matHeaderCellDef> Пакет </th>
+		<td mat-cell *matCellDef="let v"> {{v.raw}} </td>
+    </ng-container>
+	<ng-container matColumnDef="loraaddr">
+		<th mat-header-cell *matHeaderCellDef> Адрес  </th>
+		<td mat-cell *matCellDef="let v"> {{v.loraaddr}} </td>
+	</ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="showDetails(row)"></tr>
   </table>
   <mat-paginator [pageSize]="100"></mat-paginator>
-  <div fxLayout="row" fxLayoutAlign="end stretch">
-    <button color="primary" mat-button (click)="add()">Добавить новый</button>  
-  </div>
 </div>

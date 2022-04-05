@@ -1,0 +1,13 @@
+.mat-cell {
+	padding-left: 5pt;
+	padding-right: 5pt;
+}
+
+.filter {
+	padding-left: 15pt;
+	padding-right: 5pt;
+}
+
+.packetTypeSelector {
+	padding-left: 15pt;
+}

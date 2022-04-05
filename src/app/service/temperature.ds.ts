@@ -3,21 +3,21 @@ import { BehaviorSubject, of } from 'rxjs';
 import { Observable } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 
-import { RawRecord } from '../model/rawrecord';
-import { RawService } from './raw.service';
+import { TemperatureRecord } from '../model/temperaturerecord';
+import { TemperatureService } from './temperature.service';
 
 /**
  * @see https://blog.angular-university.io/angular-material-data-table/
  * @see https://github.com/angular-university/angular-material-course/tree/2-data-table-finished
  */
-export class RawDataSource implements DataSource<RawRecord> {
-  private subject = new BehaviorSubject<RawRecord[]>([]);
+export class TemperatureDataSource implements DataSource<TemperatureRecord> {
+  private subject = new BehaviorSubject<TemperatureRecord[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading = this.loadingSubject.asObservable();
 
-  constructor(private service: RawService) { }
+  constructor(private service: TemperatureService) { }
 
-  connect(collectionViewer: CollectionViewer): Observable<RawRecord[]> {
+  connect(collectionViewer: CollectionViewer): Observable<TemperatureRecord[]> {
     return this.subject.asObservable();
   }
 
