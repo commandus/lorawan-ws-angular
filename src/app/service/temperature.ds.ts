@@ -26,10 +26,10 @@ export class TemperatureDataSource implements DataSource<TemperatureRecord> {
       this.loadingSubject.complete();
   }
 
-  load(devnamePrefix: string, startDate: any, finishDate: any, packet: string,
+  load(kosaYearPrefix: string, startDate: any, finishDate: any, devnamePrefix: string,
        offset: number, pagesize: number): void {
     this.loadingSubject.next(true);
-    this.service.list(devnamePrefix, startDate, finishDate, packet, offset, pagesize).pipe(
+    this.service.list(kosaYearPrefix, startDate, finishDate, devnamePrefix, offset, pagesize).pipe(
       catchError(() => of([])),
       finalize(() => this.loadingSubject.next(false))
     )

@@ -81,7 +81,7 @@ export class RawComponent implements OnInit {
     .subscribe();
   }
 
-  load() {
+  load(): void {
     const ofs = this.paginator.pageIndex * this.paginator.pageSize;
     let startDate = 0;
     let finishDate = Math.round(new Date().getTime() / 1000);
@@ -104,16 +104,14 @@ export class RawComponent implements OnInit {
       });
   }
 
-  startChange(v: Date): void {
-    v.setHours(0, 0, 0, 0);
-    this.startDate = v;
+  startChange(): void {
+    this.startDate = this.env.parseDate(this.filterStartDate);
     this.load();
   }
 
-  finishChange(v: Date): void {
-    v.setHours(0, 0, 0, 0);
-    v.setTime(v.getTime() + 86400000); // add one day
-    this.finishDate = v;
+  finishChange(): void {
+    this.finishDate = this.env.parseDate(this.filterFinishDate);
+    this.finishDate.setTime(this.finishDate.getTime() + 86400000); // add one day
     this.load();
   }
 
@@ -135,10 +133,6 @@ export class RawComponent implements OnInit {
     this.load();
   }
 
-  showTemperature(): void {
-    this.router.navigateByUrl('/t');
-  }
-  
   showDetails(val: RawRecord): void {
     const d = new MatDialogConfig();
     d.autoFocus = true;
@@ -147,6 +141,6 @@ export class RawComponent implements OnInit {
     };
     // const dialogRef = this.dialog.open(DialogOrderComponent, d);
   }
-  
+
 }
 

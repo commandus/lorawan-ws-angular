@@ -50,6 +50,7 @@ import { AuthenticationService } from './service/authentication.service';
 import { RawComponent } from './raw/raw.component';
 import { TemperatureComponent } from './temperature/temperature.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { ControlPanelComponent } from './control-panel/control-panel.component';
 
 
 @NgModule({
@@ -61,7 +62,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 
     StripHtmlPipe,
     SafeHtml,
-    DateDowPipe
+    DateDowPipe,
+    ControlPanelComponent
   ],
   imports: [
     BrowserModule,

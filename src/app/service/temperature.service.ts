@@ -15,24 +15,36 @@ export class TemperatureService {
 
   constructor(private httpClient: HttpClient) { }
 
-  mkQuery(q: string, devName: string, startDate: number, finishDate: number, packet: string): string {
-    /*
+  mkQuery(q: string, kosaYearPrefix: string, startDate: number, finishDate: number, devNamePrefix: string): string {
+  
     if (startDate)
-      q += '&received-ge=' + startDate;
+      q += '&measured-ge=' + startDate;
     if (finishDate)
-      q += '&received-le=' + finishDate;
-    if (devName.length)
-      q += '&devname-like=' + devName + '%';
-    if (packet.length)
-      q += '&raw-like=' + packet + '%';
-      */
+      q += '&measured-le=' + finishDate;
+    if (kosaYearPrefix.length) {
+      const parts = kosaYearPrefix.split("-");
+      if (parts.length) {
+        if (parts.length >= 2) {
+          if (parts[0].length)
+            q += '&kosa=' + parts[0];
+          if (parts[1].length)
+             q += '&year=' + parts[1];
+        } else {
+          if (parts[0].length)
+            q += '&kosa=' + parts[0];
+        }
+      }
+      
+    }
+    if (devNamePrefix.length)
+      q += '&devname-like=' + devNamePrefix + '%';
     return q;
   }
 
-  list(devName: string, startDate: number, finishDate: number, packet: string,
+  list(kosaYearPrefix: string, startDate: number, finishDate: number, devNamePrefix: string,
     ofs: number, pagesize: number): Observable<any> {
     return this.httpClient.get<TemperatureRecord[]>(config.endpoint.t.url
-      + this.mkQuery('?o=' + ofs + '&s=' + pagesize, devName, startDate, finishDate, packet))
+      + this.mkQuery('?o=' + ofs + '&s=' + pagesize, kosaYearPrefix, startDate, finishDate, devNamePrefix))
       .pipe(
         map(function(response: TemperatureRecord[]) {
           return response;

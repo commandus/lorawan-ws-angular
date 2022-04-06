@@ -1,4 +1,4 @@
-const host = 'http://localhost:5002/';
+const host = 'http://84.237.104.128:5002/';
 export const config = {
   endpoint: {
     raw: {

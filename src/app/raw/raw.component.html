@@ -1,27 +1,23 @@
 <div style="height: 10pt;">
 	<mat-progress-bar *ngIf="values.loading | async" mode="indeterminate"></mat-progress-bar>
 </div>
-<div fxLayout="row" fxLayoutAlign="start stretch">
-	<button color="accent" mat-button (click)="load()">Пакеты</button>  
-    <button color="primary" mat-button (click)="showTemperature()">Температуры</button>  
-</div>
-
 <div>
 	<mat-form-field class="filter">
 	<input matInput placeholder="Устройство" #filterDevName>
 	</mat-form-field>
 	<mat-form-field  class="filter">
-	<input matInput [matDatepicker]="dpStart" placeholder="Время от" (dateChange)="startChange($event.value)" #startDate>
+	<input matInput [matDatepicker]="dpStart" placeholder="Время от" (dateChange)="startChange()" #startDate>
 	<mat-datepicker-toggle matSuffix [for]="dpStart"></mat-datepicker-toggle>
 	<mat-datepicker #dpStart></mat-datepicker>
 	</mat-form-field>
 	<mat-form-field  class="filter">
-	<input matInput [matDatepicker]="dpFinish" placeholder="до" (dateChange)="finishChange($event.value)" #finishDate>
+	<input matInput [matDatepicker]="dpFinish" placeholder="до" (dateChange)="finishChange()" #finishDate>
 	<mat-datepicker-toggle matSuffix [for]="dpFinish"></mat-datepicker-toggle>
 	<mat-datepicker #dpFinish></mat-datepicker>
 	</mat-form-field>
 
-	<button color="primary" mat-button (click)="resetFilter()">Сбросить</button>  
+	<button color="primary" mat-button (click)="load()">Обновить</button>  
+	<button color="accent" mat-button (click)="resetFilter()">Сбросить</button>  
 </div>
 
 <div class="packetTypeSelector">

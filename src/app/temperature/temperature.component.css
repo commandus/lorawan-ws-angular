@@ -1,7 +1,3 @@
-.mat-row {
-	height: auto;
-}
-
 .mat-cell {
 	padding-left: 5pt;
 	padding-right: 5pt;
@@ -24,20 +20,33 @@ a {
 	padding-right: 5pt;
 }
 
-.packetTypeSelector {
-	padding-left: 15pt;
+.hidden-row {
+	display: none;
 }
 
-.detail-row {
-	height: 0;
-	overflow: hidden;
-	display: flex;
+.mat-column-measured {
+	min-width: 100pt !important;
+	max-width: 100pt !important;
 }
 
-.mat-column-id {
-	width: 5pt !important;	
+.mat-column-kosa-year {
+	min-width: 30pt !important;	
+	max-width: 30pt !important;	
+}
+
+.mat-column-devname {
+	min-width: 60pt !important;	
 }
 
 .mat-column-no {
 	width: 5pt !important;	
 }
+
+.mat-column-vcc, .mat-column-vbat {
+	min-width: 30pt !important;	
+	max-width: 30pt !important;	
+}
+
+.mat-column-t {
+}
+

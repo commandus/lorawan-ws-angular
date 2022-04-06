@@ -24,18 +24,22 @@ export class TemperatureComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('startDate') filterStartDate: ElementRef;
   @ViewChild('finishDate') filterFinishDate: ElementRef;
-  @ViewChild('filterDevName') filterDevName: ElementRef;
+  @ViewChild('filterKosaYear') filterKosaYear: ElementRef;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   public values: TemperatureDataSource;
   
   public displayedColumns: string[] = [
-    'id', 'kosa-year', 'no', 'measured', 'parsed', 'vcc', 'vbat', 't', 'raw', 'devname', 'loraaddr', 'received'
+    'measured', 'kosa-year', 't', 'devname', 'vcc', 'vbat'
+  ];
+
+  public expandedColumns: string[] = [
+    'expandedDetail'
   ];
 
   startDate = new Date(0);
   finishDate = new Date();
-  filterRawType = '';
+  filterDeviceName = '';
 
   constructor(
     private router: Router,
@@ -61,7 +65,7 @@ export class TemperatureComponent implements OnInit {
         )
       .subscribe();
 
-    fromEvent(this.filterDevName.nativeElement, 'keyup')
+    fromEvent(this.filterKosaYear.nativeElement, 'keyup')
     .pipe(
         debounceTime(150),
         distinctUntilChanged(),
@@ -93,8 +97,8 @@ export class TemperatureComponent implements OnInit {
       this.finishDate.setTime(this.finishDate.getTime() + 86400000);
       finishDate = Math.round(this.finishDate.getTime() / 1000);
     }
-    this.values.load(this.filterDevName.nativeElement.value, startDate, finishDate, this.filterRawType, ofs, this.paginator.pageSize);
-    this.temperatureService.count(this.filterDevName.nativeElement.value, startDate, finishDate, this.filterRawType).subscribe(
+    this.values.load(this.filterKosaYear.nativeElement.value, startDate, finishDate, this.filterDeviceName, ofs, this.paginator.pageSize);
+    this.temperatureService.count(this.filterKosaYear.nativeElement.value, startDate, finishDate, this.filterDeviceName).subscribe(
       value => {
         if (value) {
           this.paginator.length = value;
@@ -102,48 +106,28 @@ export class TemperatureComponent implements OnInit {
       });
   }
 
-  startChange(v: Date): void {
-    v.setHours(0, 0, 0, 0);
-    this.startDate = v;
+  startChange(): void {
+    this.startDate = this.env.parseDate(this.filterStartDate);
     this.load();
   }
 
-  finishChange(v: Date): void {
-    v.setHours(0, 0, 0, 0);
-    v.setTime(v.getTime() + 86400000); // add one day
-    this.finishDate = v;
-    this.load();
-  }
-
-  filterRaw(v: string): void {
-    this.filterRawType = v;
+  finishChange(): void {
+    this.finishDate = this.env.parseDate(this.filterFinishDate);
+    this.finishDate.setTime(this.finishDate.getTime() + 86400000); // add one day
     this.load();
   }
 
   resetFilter(): void {
-    this.filterRawType = '';
+    this.filterDeviceName = '';
     
     this.startDate.setTime(0);
-    this.filterStartDate.nativeElement.value = null;
+    this.filterStartDate.nativeElement.value = '';
     
     this.finishDate = new Date();
-    this.filterFinishDate.nativeElement.value = null;
-    this.filterDevName.nativeElement.value = '';
+    this.filterFinishDate.nativeElement.value = '';
+    this.filterKosaYear.nativeElement.value = '';
     
     this.load();
-  }
-
-  showRaw(): void {
-    this.router.navigateByUrl('/raw');
-  }
-  
-  showDetails(val: RawRecord): void {
-    const d = new MatDialogConfig();
-    d.autoFocus = true;
-    d.data = {
-      value: val
-    };
-    // const dialogRef = this.dialog.open(DialogOrderComponent, d);
   }
 
   toggleRow(element: { expanded: boolean; }) {

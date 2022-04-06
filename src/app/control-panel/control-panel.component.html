@@ -1,0 +1,7 @@
+<div fxLayout="row" fxLayoutAlign="start stretch">
+	<button mat-icon-button aria-label="Логгеры LoraWAN" (click)="env.showDashboard()" [color]="env.menuColor('')"> 
+		<mat-icon>more_vert</mat-icon>
+	</button>
+	<button [color]="env.menuColor('raw')" mat-button (click)="env.showRaw()">Пакеты</button>  
+    <button [color]="env.menuColor('t')" mat-button (click)="env.showTemperature()">Температуры</button>  
+</div>
