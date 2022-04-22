@@ -30,7 +30,7 @@ export class TemperatureComponent implements OnInit {
   public values: TemperatureDataSource;
   
   public displayedColumns: string[] = [
-    'measured', 'kosa-year', 't', 'devname', 'vcc', 'vbat'
+    'measured', 'kosa-year', 'tp', 'devname', 'vcc', 'vbat'
   ];
 
   public expandedColumns: string[] = [
