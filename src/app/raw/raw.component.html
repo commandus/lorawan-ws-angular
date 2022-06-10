@@ -24,9 +24,16 @@
 	<div fxFlex>
 		<div fxLayout="row" fxLayoutAlign="stretch" >
 		  <mat-chip-list>
-			  <mat-chip (click)="filterRaw('')"> Все типы </mat-chip>
+			  <mat-chip (click)="filterRaw('')"> Все замеры </mat-chip>
+			  базовые 
 			  <mat-chip (click)="filterRaw('4a')"> 4a </mat-chip>
 			  <mat-chip (click)="filterRaw('4b')"> 4b </mat-chip>
+			  дельты
+			  <mat-chip (click)="filterRaw('48')"> 48 </mat-chip>
+			  <mat-chip (click)="filterRaw('49')"> 49 </mat-chip>
+			  Хаффман
+			  <mat-chip (click)="filterRaw('4c')"> 4c </mat-chip>
+			  <mat-chip (click)="filterRaw('4d')"> 4d </mat-chip>
 		  </mat-chip-list>
 		</div>
 	</div>

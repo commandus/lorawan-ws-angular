@@ -27,10 +27,10 @@ export class RawService {
     return q;
   }
 
-  list(devName: string, startDate: number, finishDate: number, packet: string,
+  list(devName: string, startDate: number, finishDate: number, packetTypes: string,
     ofs: number, pagesize: number): Observable<any> {
     return this.httpClient.get(config.endpoint.raw.url
-      + this.mkQuery('?o=' + ofs + '&s=' + pagesize, devName, startDate, finishDate, packet))
+      + this.mkQuery('?o=' + ofs + '&s=' + pagesize, devName, startDate, finishDate, packetTypes))
       .pipe(
         map(function(response: any) {
           return response;
