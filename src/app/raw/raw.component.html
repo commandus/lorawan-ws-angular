@@ -16,7 +16,7 @@
 	<mat-datepicker #dpFinish></mat-datepicker>
 	</mat-form-field>
 
-	<button color="primary" mat-button (click)="load()">Обновить</button>  
+	<button color="primary" mat-button (click)="reload()">Обновить</button>  
 	<button color="accent" mat-button (click)="resetFilter()">Сбросить</button>  
 </div>
 
@@ -65,5 +65,5 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="showDetails(row)"></tr>
   </table>
-  <mat-paginator [pageSize]="100"></mat-paginator>
+  <mat-paginator [pageSize]="20"></mat-paginator>
 </div>

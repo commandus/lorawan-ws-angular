@@ -2,7 +2,7 @@ import { fromEvent } from 'rxjs';
 import { tap, debounceTime, distinctUntilChanged, startWith, delay } from 'rxjs/operators';
 
 import { Router } from '@angular/router';
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -21,7 +21,7 @@ import { RawDataSource } from '../service/raw.ds';
   templateUrl: './raw.component.html',
   styleUrls: ['./raw.component.css']
 })
-export class RawComponent implements OnInit {
+export class RawComponent {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('startDate') filterStartDate: ElementRef;
   @ViewChild('finishDate') filterFinishDate: ElementRef;
@@ -47,9 +47,6 @@ export class RawComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     this.values = new RawDataSource(this.rawService);
-  }
-
-  ngOnInit() {
   }
 
   ngAfterViewInit() {
@@ -106,23 +103,27 @@ export class RawComponent implements OnInit {
 
   startChange(): void {
     this.startDate = this.env.parseDate(this.filterStartDate);
+    this.paginator.pageIndex = 0;
     this.load();
   }
 
   finishChange(): void {
     this.finishDate = this.env.parseDate(this.filterFinishDate);
     this.finishDate.setTime(this.finishDate.getTime() + 86400000); // add one day
+    this.paginator.pageIndex = 0;
     this.load();
   }
 
   filterRaw(v: string): void {
     this.filterRawType = v;
+    this.paginator.pageIndex = 0;
     this.load();
   }
 
   resetFilter(): void {
     this.filterRawType = '';
-    
+    this.paginator.pageIndex = 0;
+
     this.startDate.setTime(0);
     this.filterStartDate.nativeElement.value = null;
     
@@ -130,6 +131,11 @@ export class RawComponent implements OnInit {
     this.filterFinishDate.nativeElement.value = null;
     this.filterDevName.nativeElement.value = '';
     
+    this.load();
+  }
+
+  reload(): void {
+    this.paginator.pageIndex = 0;
     this.load();
   }
 
