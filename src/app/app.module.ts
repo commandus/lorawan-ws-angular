@@ -35,6 +35,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
 
 import { SafeHtml } from './pipe-safe-html';
@@ -54,53 +55,49 @@ import { ControlPanelComponent } from './control-panel/control-panel.component';
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    RawComponent,
-    TemperatureComponent,
-    DashboardComponent,
-
-    StripHtmlPipe,
-    SafeHtml,
-    DateDowPipe,
-    ControlPanelComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-
-    FormsModule,
-
-    HttpClientModule, FlexLayoutModule,
-    MatCheckboxModule, MatListModule, MatChipsModule, MatToolbarModule, MatButtonModule,
-    MatDatepickerModule, MatNativeDateModule, MatIconModule, MatSelectModule, MatOptionModule,
-    MatFormFieldModule, MatInputModule, MatProgressBarModule, MatRadioModule,
-    MatTableModule, MatSortModule, MatExpansionModule, MatAutocompleteModule, MatPaginatorModule, 
-    MatDialogModule, MatChipsModule, MatSnackBarModule, MatTooltipModule, MatSlideToggleModule
-  ],
-  providers: [
-    {
-      provide: MAT_DATE_LOCALE,
-      useValue: 'ru-RU'
-    },
-    {
-      provide: DateAdapter,
-       useClass: RuDateAdapter
-    },
-    AuthenticationService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthenticationInterceptor,
-      multi: true
-    },
-    {
-      provide: MatPaginatorIntl,
-      useClass: MatPaginatorIntlRu
-    }    
-  ],
-  entryComponents: [
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        RawComponent,
+        TemperatureComponent,
+        DashboardComponent,
+        StripHtmlPipe,
+        SafeHtml,
+        DateDowPipe,
+        ControlPanelComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        HttpClientModule, FlexLayoutModule,
+        MatCheckboxModule, MatListModule, MatChipsModule, MatToolbarModule, MatButtonModule,
+        MatDatepickerModule, MatNativeDateModule, MatIconModule, MatSelectModule, MatOptionModule,
+        MatFormFieldModule, MatInputModule, MatProgressBarModule, MatRadioModule,
+        MatTableModule, MatSortModule, MatExpansionModule, MatAutocompleteModule, MatPaginatorModule,
+        MatDialogModule, MatChipsModule, MatSnackBarModule, MatTooltipModule, MatSlideToggleModule,
+        MatMenuModule
+    ],
+    providers: [
+        {
+            provide: MAT_DATE_LOCALE,
+            useValue: 'ru-RU'
+        },
+        {
+            provide: DateAdapter,
+            useClass: RuDateAdapter
+        },
+        AuthenticationService,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthenticationInterceptor,
+            multi: true
+        },
+        {
+            provide: MatPaginatorIntl,
+            useClass: MatPaginatorIntlRu
+        }
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

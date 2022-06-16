@@ -1,5 +1,5 @@
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, ObservableInput, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
@@ -40,10 +40,11 @@ export class RawService {
   count(devName: string, startDate: any, finishDate: any, packet: any): Observable<number> {
     return this.httpClient.get<ResponseCount[]>(config.endpoint.raw_count.url
       + this.mkQuery('?', devName, startDate, finishDate, packet))
-    .pipe(
-      map(function(response: ResponseCount[]) {
-        return response.length ? response[0].cnt : 0;
-    }));
+      .pipe(
+        map(function(response: ResponseCount[]) {
+          return response.length ? response[0].cnt : 0;
+        })
+    )
   }
 
   get(id: number): Observable<any> {

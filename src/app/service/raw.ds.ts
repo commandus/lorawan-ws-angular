@@ -34,8 +34,9 @@ export class RawDataSource implements DataSource<RawRecord> {
       finalize(() => this.loadingSubject.next(false))
     )
     .subscribe(
-      value => {
+      (value) => {
         this.subject.next(value);
-      });
+      }
+    );
   }
 }

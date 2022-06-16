@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 import { RawRecord } from '../model/rawrecord';
@@ -29,22 +30,23 @@ export class RawComponent {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   public values: RawDataSource;
-  
+
   public displayedColumns: string[] = [
-    'id', 'raw', 'devname', 'loraaddr', 'received'
-    ];
+    'id', 'raw', 'devname', 'loraaddr', 'received'];
 
   
   startDate = new Date(0);
   finishDate = new Date();
   filterRawType = '';
 
+
   constructor(
     private router: Router,
     private env: EnvAppService,
     private rawService: RawService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private snackBar: MatSnackBar
   ) {
     this.values = new RawDataSource(this.rawService);
   }
@@ -98,6 +100,13 @@ export class RawComponent {
         if (value) {
           this.paginator.length = value;
         }
+      },
+      error => {
+        let snackBarRef = this.snackBar.open('Сервис временно недоступен', 'Повторить');
+        snackBarRef.onAction().subscribe(() => {
+          this.load();
+        });
+        console.error(error);
       });
   }
 

@@ -1,7 +1,16 @@
 <div fxLayout="row" fxLayoutAlign="start stretch">
-	<button mat-icon-button aria-label="Логгеры LoraWAN" (click)="env.showDashboard()" [color]="env.menuColor('')"> 
+	<button mat-icon-button aria-label="Логгеры LoRaWAN" [color]="env.menuColor('')" [matMenuTriggerFor]="menu"> 
 		<mat-icon>more_vert</mat-icon>
 	</button>
+	<mat-menu #menu="matMenu">
+		<button mat-menu-item (click)="env.showDashboard()" >Начало</button>
+		<!--
+		<div mat-menu-item>
+			Темный режим	
+			<mat-slide-toggle [(ngModel)]="env.darkMode"></mat-slide-toggle>
+		</div>
+		-->
+	</mat-menu>
 	<button [color]="env.menuColor('raw')" mat-button (click)="env.showRaw()">Пакеты</button>  
     <button [color]="env.menuColor('t')" mat-button (click)="env.showTemperature()">Температуры</button>  
 </div>

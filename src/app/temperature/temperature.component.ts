@@ -6,6 +6,7 @@ import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@an
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { RawRecord } from '../model/rawrecord';
 
@@ -46,7 +47,8 @@ export class TemperatureComponent implements OnInit {
     private env: EnvAppService,
     private temperatureService: TemperatureService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private snackBar: MatSnackBar
   ) {
     this.values = new TemperatureDataSource(this.temperatureService);
   }
@@ -103,6 +105,13 @@ export class TemperatureComponent implements OnInit {
         if (value) {
           this.paginator.length = value;
         }
+      },
+      error => {
+        let snackBarRef = this.snackBar.open('Сервис временно недоступен', 'Повторить');
+        snackBarRef.onAction().subscribe(() => {
+          this.load();
+        });
+        console.error(error);
       });
   }
 

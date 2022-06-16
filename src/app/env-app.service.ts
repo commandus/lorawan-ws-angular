@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ElementRef } from '@angular/core';
 
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { RawRecord } from './model/rawrecord';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +15,7 @@ export class EnvAppService {
   }
 
   public menu: string;
+  private _darkMode: boolean;
   
   public onError(error: any): void {
     console.log(error);
@@ -49,5 +48,12 @@ export class EnvAppService {
     return '';  
   }
 
-  
+  get darkMode(): boolean {
+    return this._darkMode;
+  }
+
+  set darkMode(value: boolean) {
+    this._darkMode = value;
+  }
+
 }
