@@ -18,6 +18,12 @@ export const config = {
     },
     t_count: {
       url: host + 't-count'
+    },
+    gateways: {
+      url: host + 'gateways'
+    },
+    passports: {
+      url: host + 'passports'
     }
   }
 };

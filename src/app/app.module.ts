@@ -52,6 +52,8 @@ import { RawComponent } from './raw/raw.component';
 import { TemperatureComponent } from './temperature/temperature.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ControlPanelComponent } from './control-panel/control-panel.component';
+import { MapGwComponent } from './map-gw/map-gw.component';
+import { PassportListComponent } from './passport-list/passport-list.component';
 
 
 @NgModule({
@@ -63,7 +65,9 @@ import { ControlPanelComponent } from './control-panel/control-panel.component';
         StripHtmlPipe,
         SafeHtml,
         DateDowPipe,
-        ControlPanelComponent
+        ControlPanelComponent,
+        MapGwComponent,
+        PassportListComponent
     ],
     imports: [
         BrowserModule,
