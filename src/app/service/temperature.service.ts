@@ -26,12 +26,12 @@ export class TemperatureService {
       if (parts.length) {
         if (parts.length >= 2) {
           if (parts[0].length)
-            q += '&kosa=' + parts[0];
+            q += '&year=' + parts[0];
           if (parts[1].length)
-             q += '&year=' + parts[1];
+             q += '&kosa=' + parts[1];
         } else {
           if (parts[0].length)
-            q += '&kosa=' + parts[0];
+            q += '&year=' + parts[0];
         }
       }
       

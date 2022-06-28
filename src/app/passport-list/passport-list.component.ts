@@ -30,14 +30,14 @@ export class PassportListComponent {
 
   public values: PassportDataSource;
 
-  public displayedColumns: string[] = ['id', 'name'];
+  public displayedColumns: string[] = ['id', 'name', 'modified', 'sensor-count', 'plume-t', 'plume-sensor'];
 
   year = 0;
   plume = 0;
 
   constructor(
     private router: Router,
-    private env: EnvAppService,
+    public env: EnvAppService,
     private passportService: PassportService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
@@ -62,7 +62,8 @@ export class PassportListComponent {
         debounceTime(150),
         distinctUntilChanged(),
         tap(() => {
-            this.load();
+          this.paginator.pageIndex = 0;
+          this.load();
         })
     )
     .subscribe();
@@ -72,7 +73,8 @@ export class PassportListComponent {
         debounceTime(150),
         distinctUntilChanged(),
         tap(() => {
-            this.load();
+          this.paginator.pageIndex = 0;
+          this.load();
         })
     )
     .subscribe();
@@ -80,6 +82,7 @@ export class PassportListComponent {
     this.sort.sortChange
     .pipe(
       tap(() => {
+        this.paginator.pageIndex = 0;
         this.load();
       })
     )
@@ -88,9 +91,14 @@ export class PassportListComponent {
 
   load(): void {
     const ofs = this.paginator.pageIndex * this.paginator.pageSize;
-    
-    this.values.load(this.filterYear.nativeElement.value, this.filterPlume.nativeElement.value, ofs, this.paginator.pageSize);
-    this.passportService.count(this.filterYear.nativeElement.value, this.filterPlume.nativeElement.value).subscribe(
+    let y = this.filterYear.nativeElement.value;
+    let p = this.filterPlume.nativeElement.value;
+    if (!y)
+      y = 0;
+    if (!p)
+      p = 0;
+    this.values.load(y, p, ofs, this.paginator.pageSize);
+    this.passportService.count(y, p).subscribe(
       value => {
         if (value) {
           this.paginator.length = value;
@@ -107,8 +115,8 @@ export class PassportListComponent {
 
   
   resetFilter(): void {
-    this.filterPlume.nativeElement.value = undefined;
-    this.filterYear.nativeElement.value = undefined;
+    this.filterPlume.nativeElement.value = '';
+    this.filterYear.nativeElement.value = '';
     this.paginator.pageIndex = 0;
    
     this.load();

@@ -11,8 +11,8 @@
 		</div>
 		-->
 	</mat-menu>
-	<button [color]="env.menuColor('passports')" mat-button (click)="env.showPassportList()">Косы</button>  
-	<button [color]="env.menuColor('raw')" mat-button (click)="env.showRaw()">Пакеты</button>  
-    <button [color]="env.menuColor('t')" mat-button (click)="env.showTemperature()">Температуры</button>  
-	<button [color]="env.menuColor('map-gw')" mat-button (click)="env.showMapGw()">Шлюзы</button>  
+	<button [color]="env.menuColor('passports')" mat-button matTooltip="Паспорта кос" (click)="env.showPassportList()"><mat-icon>folder_open</mat-icon></button>  
+	<button [color]="env.menuColor('raw')" mat-button matTooltip="Пакеты" (click)="env.showRaw()"><mat-icon>output</mat-icon></button>  
+    <button [color]="env.menuColor('t')" mat-button matTooltip="Температуры" (click)="env.showTemperature()"><mat-icon>upload</mat-icon></button>  
+	<button [color]="env.menuColor('map-gw')" mat-button matTooltip="Шлюзы" (click)="env.showMapGw()"><mat-icon>sensors</mat-icon></button>  
 </div>

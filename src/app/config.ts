@@ -22,8 +22,11 @@ export const config = {
     gateways: {
       url: host + 'gateways'
     },
-    passports: {
-      url: host + 'passports'
+    passport: {
+      url: host + 'passport'
+    },
+    passport_count: {
+      url: host + 'passport-count'
     }
   }
 };

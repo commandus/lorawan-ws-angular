@@ -1,14 +1,12 @@
 import { fromEvent } from 'rxjs';
 import { tap, debounceTime, distinctUntilChanged, startWith, delay } from 'rxjs/operators';
 
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
-import { RawRecord } from '../model/rawrecord';
 
 import { EnvAppService } from '../env-app.service';
 import { TemperatureService } from '../service/temperature.service';
@@ -29,7 +27,9 @@ export class TemperatureComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   public values: TemperatureDataSource;
-  
+  public year: number;
+  public plume: number;
+
   public displayedColumns: string[] = [
     'measured', 'kosa-year', 'tp', 'devname', 'vcc', 'vbat'
   ];
@@ -44,13 +44,17 @@ export class TemperatureComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private env: EnvAppService,
+    private activateRoute: ActivatedRoute,
+    public env: EnvAppService,
     private temperatureService: TemperatureService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private snackBar: MatSnackBar
   ) {
+    this.year = activateRoute.snapshot.params['year'];
+    this.plume = activateRoute.snapshot.params['plume'];
     this.values = new TemperatureDataSource(this.temperatureService);
+    
   }
 
   ngOnInit() {

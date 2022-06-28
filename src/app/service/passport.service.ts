@@ -12,16 +12,9 @@ export class PassportService {
 
   constructor(private httpClient: HttpClient) {};
 
-  list(kosaYear?: number, plumeNumber?: number, ofs?: number, pagesize?: number): Observable<Passport[]> {
-    let u = config.endpoint.passports.url;
-    if (kosaYear)
-      u += '?year=' + kosaYear;
-      if (kosaYear)
-      u += '?plume=' + plumeNumber;
-    if (ofs)
-      u += '?o=' + ofs;
-    if (pagesize)
-      u += '&s=' + pagesize;
+  list(kosaYear: number, plumeNumber: number, ofs: number, pagesize: number): Observable<Passport[]> {
+    let u = config.endpoint.passport.url + '?year=' + kosaYear + '&plume=' + plumeNumber + '&o=' + ofs + '&s=' + pagesize;
+    
 
     return this.httpClient.get<Passport[]>(u)
       .pipe(
@@ -31,20 +24,26 @@ export class PassportService {
               return (!kosaYear || p.id.year == kosaYear) 
                 && (!plumeNumber || p.id.plume == plumeNumber) ;
             }))
-      );
+      , map(p=>p.sort((l: Passport, r:Passport) => {
+        if (l.id.year < r.id.year)
+          return -1;
+        if (l.id.year > r.id.year)
+          return 1;
+        if (l.id.plume < r.id.plume)
+          return -1;
+        if (l.id.plume > r.id.plume)
+          return 1;
+        return 0;
+      })));
   }
 
-  count(kosaYear?: number, plumeNumber?: number): Observable<number> {
-    let u = config.endpoint.passports.url;
-    if (kosaYear)
-      u += '?year=' + kosaYear;
-      if (kosaYear)
-      u += '?plume=' + plumeNumber;
+  count(kosaYear: number, plumeNumber: number): Observable<number> {
+    let u = config.endpoint.passport_count.url + '?year=' + kosaYear + '&plume=' + plumeNumber;
   
     return this.httpClient.get<number>(u)
       .pipe(
-        map((response: number) => response
-      ));
+        map((response: number) => response)
+      );
   }
 }
 

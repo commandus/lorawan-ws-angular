@@ -54,6 +54,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ControlPanelComponent } from './control-panel/control-panel.component';
 import { MapGwComponent } from './map-gw/map-gw.component';
 import { PassportListComponent } from './passport-list/passport-list.component';
+import { FileNamePipe } from './pipe-file-name';
+import { PlumeTComponent } from './plume-t/plume-t.component';
+import { PlumeSensorComponent } from './plume-sensor/plume-sensor.component';
 
 
 @NgModule({
@@ -63,11 +66,14 @@ import { PassportListComponent } from './passport-list/passport-list.component';
         TemperatureComponent,
         DashboardComponent,
         StripHtmlPipe,
+        FileNamePipe,
         SafeHtml,
         DateDowPipe,
         ControlPanelComponent,
         MapGwComponent,
-        PassportListComponent
+        PassportListComponent,
+        PlumeTComponent,
+        PlumeSensorComponent
     ],
     imports: [
         BrowserModule,

@@ -5,6 +5,7 @@ import { Settings } from './model/settings';
 import { RGB6 } from './model/RGB6';
 
 import * as L from 'leaflet';
+import { Passport } from './model/passport';
 
 const attrOSM = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 const attrGoogle = '&copy; <a href="https://maps.google.com/">Google</a>';
@@ -78,6 +79,21 @@ export class EnvAppService {
   showPassportList(): void {
     this.router.navigateByUrl('/passport');
     this.menu = 'passport';
+  }
+
+  showPlumeT(v: Passport): void {
+    this.router.navigateByUrl('/t/' + v.id.year + '/' + v.id.plume);
+    this.menu = 'plume-t';
+  }
+
+  showPlumeT2(year: number, plume: number): void {
+    this.router.navigateByUrl('/t/' + year + '/' + plume);
+    this.menu = 'plume-t';
+  }
+
+  showPlumeSensors(v: Passport): void {
+    this.router.navigateByUrl('/plume-sensor/' + v.id.year + '/' + v.id.plume);
+    this.menu = 'plume-sensor';
   }
 
   public menuColor(menuName: string): string {

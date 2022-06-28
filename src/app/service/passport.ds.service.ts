@@ -25,7 +25,7 @@ export class PassportDataSource implements DataSource<Passport> {
       this.loadingSubject.complete();
   }
 
-  load(kosaYear?: number, plumeNumber?: number, ofs?: number, pagesize?: number): void {
+  load(kosaYear: number, plumeNumber: number, ofs: number, pagesize: number): void {
     this.loadingSubject.next(true);
     this.service.list(kosaYear, plumeNumber, ofs, pagesize).pipe(
       catchError(() => of([])),

@@ -2,9 +2,9 @@
 	<mat-progress-bar *ngIf="values.loading | async" mode="indeterminate"></mat-progress-bar>
 </div>
 <div>
-	<mat-form-field class="filter">
-	<input matInput placeholder="Год-Коса" #filterKosaYear>
-	</mat-form-field>
+	<h3>Коса №{{year}}-{{plume}}</h3>
+</div>
+<div>
 	<mat-form-field  class="filter">
 	<input matInput [matDatepicker]="dpStart" placeholder="Время от" (dateChange)="startChange()" #startDate>
 	<mat-datepicker-toggle matSuffix [for]="dpStart"></mat-datepicker-toggle>
@@ -22,10 +22,6 @@
 
 <div>
   <table mat-table [dataSource]="values" matSort multiTemplateDataRows>
-    <ng-container matColumnDef="kosa-year">
-		<th mat-header-cell *matHeaderCellDef> Коса </th>
-		<td mat-cell *matCellDef="let v">{{v.year}}-{{v.kosa}}</td>
-    </ng-container>
 	<ng-container matColumnDef="measured">
 		<th mat-header-cell *matHeaderCellDef> Время измерения </th>
 		<td mat-cell *matCellDef="let v">{{v.measured * 1000 | date : 'dd.MM.yyyy HH:mm:ss'}}</td>
@@ -57,12 +53,9 @@
 				зап. {{ +v.received * 1000 | date : 'dd.MM.yyyy HH:mm:ss'}}
 				<br/>
 				адрес  {{v.loraaddr}}		
-				<button mat-button (click)="env.showPlumeT2(v.year, v.kosa)"><mat-icon>upload</mat-icon></button>  
 			</td>
-			<td mat-cell>{{v.t}}</td>
-			<td mat-cell [attr.colspan]="3">
-				
-			</td>
+			<td mat-cell>-- {{v.t}} </td>
+			<td mat-cell [attr.colspan]="3"></td>
 			</ng-container>
 	</ng-container>
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
