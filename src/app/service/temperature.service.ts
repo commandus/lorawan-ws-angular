@@ -34,7 +34,6 @@ export class TemperatureService {
             q += '&year=' + parts[0];
         }
       }
-      
     }
     if (devNamePrefix.length)
       q += '&devname-like=' + devNamePrefix + '%';

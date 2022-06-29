@@ -24,8 +24,7 @@ import { PassportService } from '../service/passport.service';
 })
 export class PassportListComponent {
   @ViewChild(MatSort) sort: MatSort;
-  @ViewChild('filterYear') filterYear: ElementRef;
-  @ViewChild('filterPlume') filterPlume: ElementRef;
+  @ViewChild('filterKosaYear') filterKosaYear: ElementRef;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   public values: PassportDataSource;
@@ -57,7 +56,7 @@ export class PassportListComponent {
         )
       .subscribe();
 
-    fromEvent(this.filterYear.nativeElement, 'keyup')
+    fromEvent(this.filterKosaYear.nativeElement, 'keyup')
     .pipe(
         debounceTime(150),
         distinctUntilChanged(),
@@ -68,17 +67,6 @@ export class PassportListComponent {
     )
     .subscribe();
 
-    fromEvent(this.filterPlume.nativeElement, 'keyup')
-    .pipe(
-        debounceTime(150),
-        distinctUntilChanged(),
-        tap(() => {
-          this.paginator.pageIndex = 0;
-          this.load();
-        })
-    )
-    .subscribe();
-    
     this.sort.sortChange
     .pipe(
       tap(() => {
@@ -91,14 +79,26 @@ export class PassportListComponent {
 
   load(): void {
     const ofs = this.paginator.pageIndex * this.paginator.pageSize;
-    let y = this.filterYear.nativeElement.value;
-    let p = this.filterPlume.nativeElement.value;
-    if (!y)
-      y = 0;
-    if (!p)
-      p = 0;
-    this.values.load(y, p, ofs, this.paginator.pageSize);
-    this.passportService.count(y, p).subscribe(
+    const kosaYearPrefix = this.filterKosaYear.nativeElement.value;
+    let year = 0;
+    let kosa = 0;
+    if (kosaYearPrefix.length) {
+      const parts = kosaYearPrefix.split("-");
+      if (parts.length) {
+        if (parts.length >= 2) {
+          if (parts[0].length)
+            year = parts[0];
+          if (parts[1].length)
+             kosa = parts[1];
+        } else {
+          if (parts[0].length)
+            year = parts[0];
+        }
+      }
+    }
+
+    this.values.load(year, kosa, ofs, this.paginator.pageSize);
+    this.passportService.count(year, kosa).subscribe(
       value => {
         if (value) {
           this.paginator.length = value;
@@ -115,16 +115,53 @@ export class PassportListComponent {
 
   
   resetFilter(): void {
-    this.filterPlume.nativeElement.value = '';
-    this.filterYear.nativeElement.value = '';
+    this.filterKosaYear.nativeElement.value = '';
     this.paginator.pageIndex = 0;
-   
     this.load();
   }
 
   reload(): void {
     this.paginator.pageIndex = 0;
     this.load();
+  }
+
+  saveFile(): void {
+    const kosaYearPrefix = this.filterKosaYear.nativeElement.value;
+    let year = 0;
+    let kosa = 0;
+    if (kosaYearPrefix.length) {
+      const parts = kosaYearPrefix.split("-");
+      if (parts.length) {
+        if (parts.length >= 2) {
+          if (parts[0].length)
+            year = parts[0];
+          if (parts[1].length)
+             kosa = parts[1];
+        } else {
+          if (parts[0].length)
+            year = parts[0];
+        }
+      }
+    }
+
+    this.passportService.passportFile(year, kosa).subscribe(
+      value => {
+        if (value) {
+          const f = new Blob([value], { type: 'text/plain'});
+          const l = document.createElement('a');
+          l.href = URL.createObjectURL(f);
+          l.download = 'passport' + year + '-' + kosa + '.txt';
+          l.click();
+          l.remove();
+        }
+      },
+      error => {
+        let snackBarRef = this.snackBar.open('Сервис временно недоступен', 'Повторить');
+        snackBarRef.onAction().subscribe(() => {
+          this.saveFile();
+        });
+        console.error(error);
+      });
   }
 
   showDetails(val: RawRecord): void {
@@ -137,5 +174,3 @@ export class PassportListComponent {
   }
 
 }
-
-

@@ -27,6 +27,9 @@ export const config = {
     },
     passport_count: {
       url: host + 'passport-count'
+    },
+    passportFile: {
+      url: host + 'passport-file'
     }
   }
 };

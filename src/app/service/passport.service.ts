@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Passport } from '../model/passport';
 import { Observable } from 'rxjs';
@@ -40,10 +40,11 @@ export class PassportService {
   count(kosaYear: number, plumeNumber: number): Observable<number> {
     let u = config.endpoint.passport_count.url + '?year=' + kosaYear + '&plume=' + plumeNumber;
   
-    return this.httpClient.get<number>(u)
-      .pipe(
-        map((response: number) => response)
-      );
+    return this.httpClient.get<number>(u);
   }
-}
 
+  passportFile(kosaYear: number, plumeNumber: number): Observable<string> {
+    let u = config.endpoint.passportFile.url + '?year=' + kosaYear + '&plume=' + plumeNumber;
+    return this.httpClient.get(u, { responseType: 'text'});
+  };
+}

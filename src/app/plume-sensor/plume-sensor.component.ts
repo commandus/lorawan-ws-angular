@@ -35,8 +35,8 @@ export class PlumeSensorComponent implements OnInit {
       val => {
         if (val && val.length) {
           this.value = val[0];
-          this.progress = false;
         }
+        this.progress = false;
       },
       error => {
         let snackBarRef = this.snackBar.open('Сервис временно недоступен', 'Повторить');

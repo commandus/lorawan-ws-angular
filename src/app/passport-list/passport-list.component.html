@@ -3,14 +3,11 @@
 </div>
 <div>
 	<mat-form-field class="filter">
-	<input matInput placeholder="Год" #filterYear>
+	<input matInput placeholder="Год-Коса" #filterKosaYear>
 	</mat-form-field>
-	<mat-form-field class="filter">
-		<input matInput placeholder="Коса" #filterPlume>
-	</mat-form-field>
-	
 	<button color="primary" mat-button (click)="reload()">Обновить</button>  
-	<button color="accent" mat-button (click)="resetFilter()">Сбросить</button>  
+	<button mat-button (click)="resetFilter()">Сбросить</button>  
+	<button color="accent" matTooltip="Сохранить выбранные паспорта в файл" mat-button (click)="saveFile()">Файл</button>  
 </div>
 
 <div>

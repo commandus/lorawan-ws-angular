@@ -1,31 +1,37 @@
 <div style="height: 10pt;">
 	<mat-progress-bar *ngIf="progress" mode="indeterminate"></mat-progress-bar>
 </div>
+
 <div fxLayout="row" fxLayoutAlign="stretch">
-	Коса N{{year}}-{{plume}}
+	<h3>Коса N{{year}}-{{plume}}</h3>
 </div>
-<div fxLayout="row" fxLayoutAlign="stretch">
-	Дата изменения паспорта {{value.modified * 1000 | date : 'd.M.yyyy'}}
+<div *ngIf="!value">
+	Нет паспорта
 </div>
-<div fxLayout="row" fxLayoutAlign="stretch">
-	Всего {{ value.sensors.length - 1}} датчиков 
-</div>
-<div *ngFor="let v of value.sensors | slice: 1; let i = index;" fxLayout="row" fxLayoutAlign="stretch">
-  <div fxFlex fxLayout="row">
-    <div fxFlex="5em">
-		{{i+1}}
-    </div>
-    <div fxFlex="100pt">
-		{{v.mac}}
-    </div>
-    <div fxFlex>
-		<div *ngFor="let s of v.coefficients" fxLayout="row" fxLayoutAlign="stretch">
-			<div *ngFor="let c of s" fxLayout="row" fxLayoutAlign="stretch">
-				{{c}}
-			</div>	
+<div *ngIf="value">
+	<div fxLayout="row" fxLayoutAlign="stretch">
+		Дата изменения паспорта {{value.modified * 1000 | date : 'd.M.yyyy'}}
+	</div>
+	<div fxLayout="row" fxLayoutAlign="stretch">
+		Всего {{ value.sensors.length - 1}} датчиков 
+	</div>
+	<div *ngFor="let v of value.sensors | slice: 1; let i = index;" fxLayout="row" fxLayoutAlign="stretch">
+	<div fxFlex fxLayout="row">
+		<div fxFlex="5em">
+			{{i+1}}
 		</div>
-    </div>
-  </div>
+		<div fxFlex="100pt">
+			{{v.mac}}
+		</div>
+		<div fxFlex>
+			<div *ngFor="let s of v.coefficients" fxLayout="row" fxLayoutAlign="stretch">
+				<div *ngFor="let c of s" fxLayout="row" fxLayoutAlign="stretch">
+					{{c}}
+				</div>	
+			</div>
+		</div>
+	</div>
+	</div>
 </div>
 <div fxLayout="row" fxLayoutAlign="stretch">
 	<button mat-button matTooltip="Вернуться к списку кос" (click)="env.showPassportList()">Назад</button>  
