@@ -275,7 +275,7 @@ export class PassportListComponent {
     d.data = {
       title: 'Установите даты',
       message: 'Начальную и конечную',
-      value: this.savedSheetStartFinish
+      startfinish: this.savedSheetStartFinish
     };
     const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
     dialogRef.componentInstance.selected.subscribe((value) => {

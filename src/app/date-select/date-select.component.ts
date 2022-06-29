@@ -26,18 +26,15 @@ export class DateSelectComponent implements OnInit {
 
   select(): void {
     this.startDate.value.setHours(0, 0, 0, 0);
-    let start = Math.round(this.startDate.value.getTime() / 1000);
-    this.finishDate.value.setHours(0, 0, 0, 0);
-    let finish = Math.round(this.finishDate.value.getTime() / 1000);
-    let r: StartFinish;
+    let start = Math.ceil(this.startDate.value.getTime() / 1000);
+    this.finishDate.value.setHours(23, 59, 59, 0);
+    let finish = Math.ceil(this.finishDate.value.getTime() / 1000);
     if (finish < start) {
       // swap
       const t = start;
       start = finish;
       finish = t;
     }
-    finish += 86400; // day inclusive
-    r = new StartFinish(start, finish);
-    this.selected.emit(r);
+    this.selected.emit(new StartFinish(start, finish));
   }
 }

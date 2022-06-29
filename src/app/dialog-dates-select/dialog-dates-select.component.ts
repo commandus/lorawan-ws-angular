@@ -11,19 +11,23 @@ export class DialogDatesSelectComponent {
   @Output() selected = new EventEmitter<StartFinish>();
   title: string;
   message: string;
-  value: StartFinish;
+  startfinish: StartFinish;
 
   constructor(
     private dialogRef: MatDialogRef<DialogDatesSelectComponent>,
-    @Inject(MAT_DIALOG_DATA) data: {title: string, message: string, value?: StartFinish }
+    @Inject(MAT_DIALOG_DATA) data: {title: string, message: string, startfinish?: StartFinish }
   ) {
     this.title = data.title;
     this.message = data.message;
 
-    if (typeof data.value === 'undefined') {
-      this.value = new StartFinish(Math.round(new Date().getTime() / 1000), Math.round(new Date().getTime() / 1000));
+    if (typeof data.startfinish === 'undefined') {
+      let d = new Date();
+      d.setHours(0,0,0,0);
+      const f = d.getTime() / 1000;
+      const s = f - 86400;
+      this.startfinish = new StartFinish(s, f);
     } else {
-      this.value = data.value;
+      this.startfinish = data.startfinish;
     }
   }
 
