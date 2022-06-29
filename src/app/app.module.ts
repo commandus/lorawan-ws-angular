@@ -8,7 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatOptionModule } from '@angular/material/core';
@@ -57,6 +57,8 @@ import { PassportListComponent } from './passport-list/passport-list.component';
 import { FileNamePipe } from './pipe-file-name';
 import { PlumeTComponent } from './plume-t/plume-t.component';
 import { PlumeSensorComponent } from './plume-sensor/plume-sensor.component';
+import { DateSelectComponent } from './date-select/date-select.component';
+import { DialogDatesSelectComponent } from './dialog-dates-select/dialog-dates-select.component';
 
 
 @NgModule({
@@ -73,13 +75,15 @@ import { PlumeSensorComponent } from './plume-sensor/plume-sensor.component';
         MapGwComponent,
         PassportListComponent,
         PlumeTComponent,
-        PlumeSensorComponent
+        PlumeSensorComponent,
+        DateSelectComponent,
+        DialogDatesSelectComponent
     ],
     imports: [
         BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
-        FormsModule,
+        FormsModule, ReactiveFormsModule,
         HttpClientModule, FlexLayoutModule,
         MatCheckboxModule, MatListModule, MatChipsModule, MatToolbarModule, MatButtonModule,
         MatDatepickerModule, MatNativeDateModule, MatIconModule, MatSelectModule, MatOptionModule,

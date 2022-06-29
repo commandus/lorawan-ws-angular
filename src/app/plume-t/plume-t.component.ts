@@ -41,18 +41,14 @@ export class PlumeTComponent implements OnInit {
     filterDeviceName = '';
   
     constructor(
-      private router: Router,
       private activateRoute: ActivatedRoute,
       private env: EnvAppService,
       private temperatureService: TemperatureService,
-      private dialog: MatDialog,
-      private cdr: ChangeDetectorRef,
       private snackBar: MatSnackBar
     ) {
-      this.year = activateRoute.snapshot.params['year'];
-      this.plume = activateRoute.snapshot.params['plume'];
+      this.year = this.activateRoute.snapshot.params['year'];
+      this.plume = this.activateRoute.snapshot.params['plume'];
       this.values = new TemperatureDataSource(this.temperatureService);
-      
     }
   
     ngOnInit() {

@@ -2,6 +2,10 @@
 export class PlumeId {
 	public plume: number;	// 1
 	public year: number;	// 3
+	public id(): number 	///< used in the comparison
+	{
+		return this.year * 1000 + this.plume;
+	}
 }
 
 export class Sensor {
@@ -14,4 +18,5 @@ export class Passport {
 	public name: string;		// file name path
 	public id: PlumeId;			// plume, year
 	public sensors: Sensor[];	// 
+	public checked: boolean;
 }

@@ -7,37 +7,48 @@
 	</mat-form-field>
 	<button color="primary" mat-button (click)="reload()">Обновить</button>  
 	<button mat-button (click)="resetFilter()">Сбросить</button>  
-	<button color="accent" matTooltip="Сохранить выбранные паспорта в файл" mat-button (click)="saveFile()">Файл</button>  
+	<button color="accent" matTooltip="Скачать выбранные паспорта в файл" mat-button (click)="saveFile()">Файл паспортов</button>
 </div>
 
 <div>
   <table mat-table [dataSource]="values" matSort>
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef> № </th>
-      <td class="small" mat-cell *matCellDef="let v">{{v.id.year}}-{{v.id.plume}}</td>
+      <td class="small" mat-cell *matCellDef="let v">
+			{{v.id.year}}-{{v.id.plume}}
+		</td>
     </ng-container>
 	<ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef> Файл  </th>
-      <td mat-cell *matCellDef="let v"> {{v.name | filename }} </td>
+      <td mat-cell *matCellDef="let v" matTooltip="Скачать паспорт {{v.name | filename }} ">
+		<a (click)="saveFile(v.id)">
+			N{{v.id.year}}-{{v.id.plume}}.txt
+		</a>
+	</td>
     </ng-container>
 	<ng-container matColumnDef="modified">
 		<th mat-header-cell *matHeaderCellDef> Время обновления  </th>
 		<td mat-cell *matCellDef="let v"> {{v.modified * 1000 | date : 'd.M.yyyy'}} </td>
 	</ng-container>
 	<ng-container matColumnDef="sensor-count">
-		<th mat-header-cell *matHeaderCellDef> Датчиков </th>
-		<td mat-cell *matCellDef="let v"> {{ v.sensors.length - 1}} </td>
+		<th mat-header-cell *matHeaderCellDef> Датчики </th>
+		<td mat-cell *matCellDef="let v">
+			<button mat-button (click)="env.showPlumeSensors(v)">{{ v.sensors.length - 1}}</button>  
+		</td>
 	</ng-container>
 	<ng-container matColumnDef="plume-t">
 		<th mat-header-cell *matHeaderCellDef> Измерения </th>
 		<td mat-cell *matCellDef="let v">
-			<button mat-button (click)="env.showPlumeT(v)"><mat-icon>upload</mat-icon></button>  
+			<button mat-button (click)="env.showPlumeT(v)"><mat-icon>arrow_right_alt</mat-icon></button>  
 		</td>
 	</ng-container>
-	<ng-container matColumnDef="plume-sensor">
-		<th mat-header-cell *matHeaderCellDef> Датчики </th>
+	<ng-container matColumnDef="download">
+		<th mat-header-cell *matHeaderCellDef> Скачать </th>
 		<td mat-cell *matCellDef="let v">
-			<button mat-button (click)="env.showPlumeSensors(v)"><mat-icon>settings_input_composite</mat-icon></button>  
+			<mat-checkbox (click)="$event.stopPropagation()" 
+				(change)="$event ? tooglePassportSelection(v) : null" 
+				[checked]="isPassportSelected(v)">
+			</mat-checkbox>
 		</td>
 	</ng-container>
   
@@ -45,4 +56,11 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="showDetails(row)"></tr>
   </table>
   <mat-paginator [pageSize]="20"></mat-paginator>
+
+  <div>
+	<button mat-button (click)="selectAll(true)">Выбрать все</button>
+	<button mat-button (click)="selectAll(false)">Снять выделение</button>  
+	<button color="accent" matTooltip="Скачать выбранные измерения в файл" mat-button (click)="selectDateAndSaveSheet()">Скачать</button>
+</div>
+
 </div>

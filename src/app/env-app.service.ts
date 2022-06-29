@@ -46,7 +46,13 @@ export class EnvAppService {
 
   public menu: string;
   private _darkMode: boolean;
-  
+
+  public today(): number {
+    let d = new Date();
+    d.setHours(0,0,0,0);
+    return d.getTime() / 1000;
+  }
+
   public onError(error: any): void {
     console.log(error);
   }
