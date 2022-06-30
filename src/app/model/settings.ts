@@ -1,9 +1,11 @@
 export class Settings {
   mapType: number;
+  sheetType: number;
   last: number[];
 
   private reset() {
     this.mapType = 0;
+    this.sheetType = 0;
     this.last = [62.03389, 129.73306];
   }
 

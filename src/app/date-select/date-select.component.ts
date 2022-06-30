@@ -26,9 +26,9 @@ export class DateSelectComponent implements OnInit {
 
   select(): void {
     this.startDate.value.setHours(0, 0, 0, 0);
-    let start = Math.ceil(this.startDate.value.getTime() / 1000);
+    let start = Math.floor(this.startDate.value.getTime() / 1000);
     this.finishDate.value.setHours(23, 59, 59, 0);
-    let finish = Math.ceil(this.finishDate.value.getTime() / 1000);
+    let finish = Math.floor(this.finishDate.value.getTime() / 1000);
     if (finish < start) {
       // swap
       const t = start;

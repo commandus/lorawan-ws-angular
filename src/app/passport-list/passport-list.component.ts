@@ -14,9 +14,14 @@ import { EnvAppService } from '../env-app.service';
 import { PassportDataSource } from '../service/passport.ds.service';
 import { PassportService } from '../service/passport.service';
 import { Passport, PlumeId } from '../model/passport';
-import { DialogDatesSelectComponent } from '../dialog-dates-select/dialog-dates-select.component';
 import { StartFinish } from '../model/startfinish';
 import { TemperatureService } from '../service/temperature.service';
+import { DialogDatesSelectComponent } from '../dialog-dates-select/dialog-dates-select.component';
+import { DialogSheetFormatComponent } from '../dialog-sheet-format/dialog-sheet-format.component';
+
+import * as xlsx from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { formatDate } from '@angular/common';
 
 // import { DialogOrderComponent } from '../dialog-order/dialog-order.component';
 
@@ -44,6 +49,8 @@ export class PassportListComponent {
   plume = 0;
   
   savedSheetStartFinish = new StartFinish(this.env.today()- 86400, this.env.today());
+  savedWorkSheets = new Map<string, xlsx.WorkSheet>();
+  workSheetsCount = 0;
 
   constructor(
     public env: EnvAppService,
@@ -178,14 +185,8 @@ export class PassportListComponent {
 
     this.passportService.passportFile(year, kosa).subscribe(
       value => {
-        if (value) {
-          const f = new Blob([value], { type: 'text/plain'});
-          const l = document.createElement('a');
-          l.href = URL.createObjectURL(f);
-          l.download = 'N' + year + '-' + kosa + '.txt';
-          l.click();
-          l.remove();
-        }
+        const data: Blob = new Blob([value], { type: 'text/plain;charset=UTF-8' });
+        FileSaver.saveAs(data, 'N' + year + '-' + kosa + '.txt');
       },
       error => {
         let snackBarRef = this.snackBar.open('Сервис временно недоступен', 'Повторить');
@@ -221,21 +222,44 @@ export class PassportListComponent {
     return this.selection.isSelected(v.id.year * 1000 + v.id.plume);
   }
   
+  saveWorkBook() {
+    const workbook = xlsx.utils.book_new();
+    for (let e of this.savedWorkSheets.entries()) {
+      xlsx.utils.book_append_sheet(workbook, e[1], e[0]);
+    }
+    const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+    const d1 = new Date(this.savedSheetStartFinish.start * 1000);
+    const d2 = new Date(this.savedSheetStartFinish.finish * 1000);
+    const fn = formatDate(d1, 'd.M.yy', 'en-US') + '-' + formatDate(d2, 'd.M.yy', 'en-US');
+    FileSaver.saveAs(data, fn + '.xlsx');
+    this.savedWorkSheets.clear();
+  }
+
   saveSheet(year: number, plume: number, startfinish: StartFinish) : void
   {
     const kosaYearPrefix = year + '-' + plume;
+    
     this.temperatureService.list(kosaYearPrefix, startfinish.start, startfinish.finish, '',  0, 0).subscribe(value => {
-      console.log(value);
+      const worksheet = xlsx.utils.json_to_sheet(value);
+      this.savedWorkSheets.set('N' + year + '-' + plume, worksheet);
+      if (this.savedWorkSheets.size == this.workSheetsCount) {
+        // done
+        this.saveWorkBook();
+      }
+      
     });
-    console.log();
   }
 
-  saveSheets() : void {
+  saveSheets(): void
+  {
+    this.savedWorkSheets.clear();
     switch (this.selectionMode) {
       case 0:
         // selection
+        this.workSheetsCount = this.selection.selected.length;
         this.selection.selected.forEach(y1000p => {
-          const year = y1000p / 1000;
+          const year = Math.floor(y1000p / 1000);
           const plume = y1000p - (year * 1000);
           this.saveSheet(year, plume, this.savedSheetStartFinish);
         });
@@ -243,11 +267,31 @@ export class PassportListComponent {
       case 1:
         // selected all
         this.passportService.list(0, 0, 0, 0).subscribe(values => {
+          this.workSheetsCount = values.length;
           values.forEach(p => {
             this.saveSheet(p.id.year, p.id.plume, this.savedSheetStartFinish);
           });
         });
         break;
+    }
+  }
+
+  selectSheetTypeAndSaveSheets() : void {
+    if (!this.env.settings.sheetType) {
+      const d = new MatDialogConfig();
+      d.autoFocus = true;
+      d.data = {
+        title: 'Выберите формат',
+        message: 'электронной таблицы',
+        sheetType: this.env.settings.sheetType
+      };
+      const dialogRef = this.dialog.open(DialogSheetFormatComponent, d);
+      dialogRef.componentInstance.selected.subscribe((value) => {
+        this.env.settings.sheetType = value;
+        this.saveSheets();
+      });
+    } else {
+      this.saveSheets();
     }
   }
 
@@ -281,7 +325,7 @@ export class PassportListComponent {
     dialogRef.componentInstance.selected.subscribe((value) => {
       this.savedSheetStartFinish.start = value.start;
       this.savedSheetStartFinish.finish = value.finish;
-      this.saveSheets();
+      this.selectSheetTypeAndSaveSheets();
     });
   }
 }

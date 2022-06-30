@@ -9,6 +9,7 @@ nvm, npm, angular-cli (ng)
 ```
 npm i --save-dev leaflet
 npm i --save-dev @types/leaflet
+npm i xlsx
 npm i -g typescript
 ng add @angular/material
 ```

@@ -59,6 +59,7 @@ import { PlumeTComponent } from './plume-t/plume-t.component';
 import { PlumeSensorComponent } from './plume-sensor/plume-sensor.component';
 import { DateSelectComponent } from './date-select/date-select.component';
 import { DialogDatesSelectComponent } from './dialog-dates-select/dialog-dates-select.component';
+import { DialogSheetFormatComponent } from './dialog-sheet-format/dialog-sheet-format.component';
 
 
 @NgModule({
@@ -77,7 +78,8 @@ import { DialogDatesSelectComponent } from './dialog-dates-select/dialog-dates-s
         PlumeTComponent,
         PlumeSensorComponent,
         DateSelectComponent,
-        DialogDatesSelectComponent
+        DialogDatesSelectComponent,
+        DialogSheetFormatComponent
     ],
     imports: [
         BrowserModule,

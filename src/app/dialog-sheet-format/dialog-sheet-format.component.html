@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>{{title}}</h2>
+<p>{{message}}</p>
+<div fxLayout="column">
+    <button fxFlex mat-button (click)="selectSheetType(1);">Excel 2007 XLSX</button>
+    <!--
+    <button fxFlex mat-button (click)="selectSheetType(2);">Excel 2007 XLSB</button>
+    <button fxFlex mat-button (click)="selectSheetType(3);">Excel 97 XLS</button>
+    <button fxFlex mat-button (click)="selectSheetType(4);">ODS</button>
+    <button fxFlex mat-button (click)="selectSheetType(5);">Flat ODS</button>
+    -->
+    <button fxFlex mat-button (click)="selectSheetType(6);">CSV</button>
+    <button fxFlex mat-button (click)="selectSheetType(7);">JSON</button>
+</div>

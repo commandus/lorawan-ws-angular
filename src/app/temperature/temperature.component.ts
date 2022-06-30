@@ -8,9 +8,16 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+import * as xlsx from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { formatDate } from '@angular/common';
+
 import { EnvAppService } from '../env-app.service';
 import { TemperatureService } from '../service/temperature.service';
 import { TemperatureDataSource } from '../service/temperature.ds';
+import { StartFinish } from 'app/model/startfinish';
+import { DialogDatesSelectComponent } from '../dialog-dates-select/dialog-dates-select.component';
+import { DialogSheetFormatComponent } from '../dialog-sheet-format/dialog-sheet-format.component';
 
 // import { DialogOrderComponent } from '../dialog-order/dialog-order.component';
 
@@ -29,7 +36,7 @@ export class TemperatureComponent implements OnInit {
   public values: TemperatureDataSource;
   public year: number;
   public plume: number;
-
+  
   public displayedColumns: string[] = [
     'measured', 'kosa-year', 'tp', 'devname', 'vcc', 'vbat'
   ];
@@ -40,6 +47,9 @@ export class TemperatureComponent implements OnInit {
 
   startDate = new Date(0);
   finishDate = new Date();
+
+  public sheetStartFinish = new StartFinish(Math.floor(this.startDate.getTime() / 1000), Math.floor(this.finishDate.getTime() / 1000));
+
   filterDeviceName = '';
 
   constructor(
@@ -121,12 +131,14 @@ export class TemperatureComponent implements OnInit {
 
   startChange(): void {
     this.startDate = this.env.parseDate(this.filterStartDate);
+    this.sheetStartFinish.start = Math.floor(this.startDate.getTime() / 1000);
     this.load();
   }
 
   finishChange(): void {
     this.finishDate = this.env.parseDate(this.filterFinishDate);
     this.finishDate.setTime(this.finishDate.getTime() + 86400000); // add one day
+    this.sheetStartFinish.finish = Math.floor(this.finishDate.getTime() / 1000)
     this.load();
   }
 
@@ -149,4 +161,51 @@ export class TemperatureComponent implements OnInit {
     else  
       element.expanded = !element.expanded
   }
+
+  saveSheet(): void
+  {
+    const kosaYearPrefix = this.year + '-' + this.plume;
+    this.temperatureService.list(kosaYearPrefix, startfinish.start, startfinish.finish, '',  0, 0).subscribe(value => {
+      const worksheet = xlsx.utils.json_to_sheet(value);
+      this.savedWorkSheets.set('N' + this.year + '-' + this.plume, worksheet);
+        this.saveWorkBook();
+      });
+  }
+
+  selectSheetTypeAndSaveSheets() : void {
+    if (!this.env.settings.sheetType) {
+      const d = new MatDialogConfig();
+      d.autoFocus = true;
+      d.data = {
+        title: 'Выберите формат',
+        message: 'электронной таблицы',
+        sheetType: this.env.settings.sheetType
+      };
+      const dialogRef = this.dialog.open(DialogSheetFormatComponent, d);
+      dialogRef.componentInstance.selected.subscribe((value) => {
+        this.env.settings.sheetType = value;
+        this.saveSheet();
+      });
+    } else {
+      this.saveSheet();
+    }
+  }
+
+  selectDateAndSaveSheet(): void 
+  {
+    const d = new MatDialogConfig();
+    d.autoFocus = true;
+    d.data = {
+      title: 'Установите даты',
+      message: 'Начальную и конечную',
+      startfinish: this.sheetStartFinish
+    };
+    const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
+    dialogRef.componentInstance.selected.subscribe((value) => {
+      this.sheetStartFinish.start = value.start;
+      this.sheetStartFinish.finish = value.finish;
+      this.selectSheetTypeAndSaveSheets();
+    });
+  }
+
 }
