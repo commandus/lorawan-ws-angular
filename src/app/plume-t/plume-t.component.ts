@@ -140,7 +140,7 @@ export class PlumeTComponent implements OnInit {
         element.expanded = !element.expanded
     }
 
-    saveSheet(startFinish: StartFinish): void
+    saveSheet(startFinish: StartFinish, typ: number): void
     {
       const kosaYearPrefix = this.year + '-' + this.plume;
       // 32768 minus header
@@ -150,17 +150,24 @@ export class PlumeTComponent implements OnInit {
           let s = new TemperatureSheet(row);
           rows.push(s);
         });
-        console.log(rows);
-        const worksheet = xlsx.utils.json_to_sheet(rows, { cellDates: true });
-
+        const worksheet = xlsx.utils.json_to_sheet(rows);
+        const heading = [['№', 'Коса', 'Год', '№ пакета', 'Время измерения', 'Время записи', 'Vcc', 'Vbat', 'Пакет(ы)', 'Устройство', 'Адрес', 'Время получения']];
+        xlsx.utils.sheet_add_aoa(worksheet, heading);
         const workbook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(workbook, worksheet, 'N' + kosaYearPrefix);
-        const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-        const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+
         const d1 = new Date(startFinish.start * 1000);
         const d2 = new Date(startFinish.finish * 1000);
         const fn = formatDate(d1, 'dd.MM.yy', 'en-US') + '-' + formatDate(d2, 'dd.MM.yy', 'en-US');
-        FileSaver.saveAs(data, fn + '.xlsx');
+        if (typ == 6) {
+          const csv = xlsx.utils.sheet_to_csv(worksheet, { strip: true });
+          const data:Blob = new Blob([csv], { type: 'text/csv;charset=UTF-8' });
+          FileSaver.saveAs(data, fn + '.csv');
+        } else {
+          const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+          const data:Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+          FileSaver.saveAs(data, fn + '.xlsx');
+        }
       });
     }
   
@@ -176,10 +183,10 @@ export class PlumeTComponent implements OnInit {
         const dialogRef = this.dialog.open(DialogSheetFormatComponent, d);
         dialogRef.componentInstance.selected.subscribe((value) => {
           this.env.settings.sheetType = value;
-          this.saveSheet(startFinish);
+          this.saveSheet(startFinish, value);
         });
       } else {
-        this.saveSheet(startFinish);
+        this.saveSheet(startFinish, this.env.settings.sheetType);
       }
     }
   

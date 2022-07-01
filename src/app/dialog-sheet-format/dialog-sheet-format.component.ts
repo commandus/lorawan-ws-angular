@@ -27,7 +27,7 @@ export class DialogSheetFormatComponent {
    * 4 ODS             N/A
    * 5 Flat ODS        N/A
    * 6 CSV
-   * 7 JSON
+   * 7 JSON            N/A
   */
   selectSheetType(v: number): void {
     if (v) {

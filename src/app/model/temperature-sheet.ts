@@ -2,17 +2,17 @@ import { TemperatureRecord } from "./temperaturerecord";
 
 export class TemperatureSheet {
 	public id: number;
-	public kosa: number;
 	public year: number;
+	public kosa: number;
 	public no: number;
 	public measured: Date;
 	public parsed: Date;
+	public received: Date;
 	public vcc: number;
 	public vbat: number;
 	public raw: string;
 	public devname: string;
 	public loraaddr: string;
-	public received: string;
 	public t1?: number;
 	public t2?: number;
 	public t3?: number;
@@ -87,7 +87,7 @@ export class TemperatureSheet {
   	  this.raw = '';
 	  this.devname = '';
 	  this.loraaddr = '';
-	  this.received = '';
+	  this.received = new Date(0);
 	}
   
 	constructor(value: TemperatureRecord) {
@@ -106,7 +106,7 @@ export class TemperatureSheet {
 		this.raw = value.raw;
 		this.devname = value.devname;
 		this.loraaddr = value.loraaddr;
-		this.received = value.received;
+		this.received = new Date(parseInt(value.received) * 1000);
 		
 		if (value.t.length > 1) {
 			this.t1 = value.t[1];
