@@ -15,7 +15,7 @@ import { formatDate } from '@angular/common';
 import { EnvAppService } from '../env-app.service';
 import { TemperatureService } from '../service/temperature.service';
 import { TemperatureDataSource } from '../service/temperature.ds';
-import { StartFinish } from 'app/model/startfinish';
+import { StartFinish } from '../model/startfinish';
 import { DialogDatesSelectComponent } from '../dialog-dates-select/dialog-dates-select.component';
 import { DialogSheetFormatComponent } from '../dialog-sheet-format/dialog-sheet-format.component';
 
@@ -45,10 +45,22 @@ export class TemperatureComponent implements OnInit {
     'expandedDetail'
   ];
 
-  startDate = new Date(0);
-  finishDate = new Date();
+  private getStartFinish(startWith1970: boolean): StartFinish {
+    const d2 = Math.floor(new Date().getTime() / 1000);
+    let startFinish = new StartFinish(startWith1970 ? 0 : d2 - 86400, d2);
+    if (this.env.hasDate(this.filterStartDate)) {
+      let d = this.env.parseDate(this.filterStartDate);
+      d.setHours(0, 0, 0, 0);
+      startFinish.start = Math.floor(d.getTime() / 1000);
+    }
 
-  public sheetStartFinish = new StartFinish(Math.floor(this.startDate.getTime() / 1000), Math.floor(this.finishDate.getTime() / 1000));
+    if (this.env.hasDate(this.filterFinishDate)) {
+      let d = this.env.parseDate(this.filterFinishDate);
+      d.setHours(23, 59, 59, 0);
+      startFinish.finish = Math.floor(d.getTime() / 1000);
+    }
+    return startFinish;
+  }
 
   filterDeviceName = '';
 
@@ -100,21 +112,11 @@ export class TemperatureComponent implements OnInit {
   }
 
   load() {
+    const sf = this.getStartFinish(true);
     const ofs = this.paginator.pageIndex * this.paginator.pageSize;
-    let startDate = 0;
-    let finishDate = Math.round(new Date().getTime() / 1000);
     
-    if (this.startDate) {
-      this.startDate.setHours(0, 0, 0, 0);
-      startDate = Math.round(this.startDate.getTime() / 1000);
-    }
-    if (this.finishDate) {
-      this.finishDate.setHours(0, 0, 0, 0);
-      this.finishDate.setTime(this.finishDate.getTime() + 86400000);
-      finishDate = Math.round(this.finishDate.getTime() / 1000);
-    }
-    this.values.load(this.filterKosaYear.nativeElement.value, startDate, finishDate, this.filterDeviceName, ofs, this.paginator.pageSize);
-    this.temperatureService.count(this.filterKosaYear.nativeElement.value, startDate, finishDate, this.filterDeviceName).subscribe(
+    this.values.load(this.filterKosaYear.nativeElement.value, sf.start, sf.finish, this.filterDeviceName, ofs, this.paginator.pageSize);
+    this.temperatureService.count(this.filterKosaYear.nativeElement.value, sf.start, sf.finish, this.filterDeviceName).subscribe(
       value => {
         if (value) {
           this.paginator.length = value;
@@ -130,25 +132,18 @@ export class TemperatureComponent implements OnInit {
   }
 
   startChange(): void {
-    this.startDate = this.env.parseDate(this.filterStartDate);
-    this.sheetStartFinish.start = Math.floor(this.startDate.getTime() / 1000);
     this.load();
   }
 
   finishChange(): void {
-    this.finishDate = this.env.parseDate(this.filterFinishDate);
-    this.finishDate.setTime(this.finishDate.getTime() + 86400000); // add one day
-    this.sheetStartFinish.finish = Math.floor(this.finishDate.getTime() / 1000)
     this.load();
   }
 
   resetFilter(): void {
     this.filterDeviceName = '';
     
-    this.startDate.setTime(0);
     this.filterStartDate.nativeElement.value = '';
     
-    this.finishDate = new Date();
     this.filterFinishDate.nativeElement.value = '';
     this.filterKosaYear.nativeElement.value = '';
     
@@ -162,17 +157,26 @@ export class TemperatureComponent implements OnInit {
       element.expanded = !element.expanded
   }
 
-  saveSheet(): void
+  saveSheet(sf: StartFinish): void
   {
-    const kosaYearPrefix = this.year + '-' + this.plume;
-    this.temperatureService.list(kosaYearPrefix, startfinish.start, startfinish.finish, '',  0, 0).subscribe(value => {
+    this.temperatureService.list(this.filterKosaYear.nativeElement.value, sf.start, sf.finish, '',  0, 0).subscribe(value => {
+      const kosaYearPrefix = this.year + '-' + this.plume;
       const worksheet = xlsx.utils.json_to_sheet(value);
-      this.savedWorkSheets.set('N' + this.year + '-' + this.plume, worksheet);
-        this.saveWorkBook();
-      });
+      const workbook = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(workbook, worksheet, 'N' + kosaYearPrefix);
+      const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+      const d1 = new Date(sf.start * 1000);
+      const d2 = new Date(sf.finish * 1000);
+      const fn = formatDate(d1, 'd.M.yy', 'en-US') + '-' + formatDate(d2, 'd.M.yy', 'en-US');
+      FileSaver.saveAs(data, fn + '.xlsx');
+      // update date
+      this.filterStartDate.nativeElement.value = formatDate(new Date(sf.start * 1000), 'd.M.yyyy', 'en-US');
+      this.filterFinishDate.nativeElement.value = formatDate(new Date(sf.start * 1000), 'd.M.yyyy', 'en-US');
+    });
   }
 
-  selectSheetTypeAndSaveSheets() : void {
+  selectSheetTypeAndSaveSheets(sf: StartFinish) : void {
     if (!this.env.settings.sheetType) {
       const d = new MatDialogConfig();
       d.autoFocus = true;
@@ -184,27 +188,28 @@ export class TemperatureComponent implements OnInit {
       const dialogRef = this.dialog.open(DialogSheetFormatComponent, d);
       dialogRef.componentInstance.selected.subscribe((value) => {
         this.env.settings.sheetType = value;
-        this.saveSheet();
+        this.saveSheet(sf);
       });
     } else {
-      this.saveSheet();
+      this.saveSheet(sf);
     }
   }
 
   selectDateAndSaveSheet(): void 
   {
+    const sf = this.getStartFinish(false);
     const d = new MatDialogConfig();
     d.autoFocus = true;
     d.data = {
       title: 'Установите даты',
       message: 'Начальную и конечную',
-      startfinish: this.sheetStartFinish
+      startfinish: sf
     };
     const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
     dialogRef.componentInstance.selected.subscribe((value) => {
-      this.sheetStartFinish.start = value.start;
-      this.sheetStartFinish.finish = value.finish;
-      this.selectSheetTypeAndSaveSheets();
+      sf.start = value.start;
+      sf.finish = value.finish;
+      this.selectSheetTypeAndSaveSheets(sf);
     });
   }
 

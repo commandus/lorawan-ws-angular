@@ -70,7 +70,9 @@
     <tr mat-row *matRowDef="let row; columns: expandedColumns;" [class.hidden-row]="row.expanded" class="hidden-row" ></tr>
 </table>
 <mat-paginator [pageSize]="100"></mat-paginator>
-</div>
+
 <div>
 	<button color="accent" matTooltip="Скачать в файл" mat-button (click)="selectDateAndSaveSheet()">Скачать</button>
  </div>
+
+</div>

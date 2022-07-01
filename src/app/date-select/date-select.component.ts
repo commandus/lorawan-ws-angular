@@ -22,7 +22,7 @@ export class DateSelectComponent implements OnInit {
   ngOnInit() {
     this.startDate = new FormControl(typeof this.start === 'undefined' ? new Date() : new Date(this.start * 1000));
     this.finishDate = new FormControl(typeof this.finish === 'undefined' ? new Date() : new Date(this.finish * 1000));
-    }
+  }
 
   select(): void {
     this.startDate.value.setHours(0, 0, 0, 0);

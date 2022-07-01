@@ -48,7 +48,7 @@ export class PassportListComponent {
   year = 0;
   plume = 0;
   
-  savedSheetStartFinish = new StartFinish(this.env.today()- 86400, this.env.today());
+  savedSheetStartFinish = new StartFinish(this.env.today() - 86400, this.env.today());
   savedWorkSheets = new Map<string, xlsx.WorkSheet>();
   workSheetsCount = 0;
 

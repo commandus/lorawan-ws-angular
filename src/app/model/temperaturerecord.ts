@@ -8,6 +8,7 @@ export class TemperatureRecord {
 	public vcc: number;
 	public vbat: number;
 	public t: number[];
+	public tp: number[];
 	public raw: string;
 	public devname: string;
 	public loraaddr: string;
@@ -23,6 +24,7 @@ export class TemperatureRecord {
 	  this.vcc = 0;
 	  this.vbat = 0;
 	  this.t = [];
+	  this.tp = [];
   	  this.raw = '';
 	  this.devname = '';
 	  this.loraaddr = '';

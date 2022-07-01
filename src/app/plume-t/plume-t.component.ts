@@ -1,16 +1,24 @@
-import { fromEvent } from 'rxjs';
-import { tap, debounceTime, distinctUntilChanged, startWith, delay } from 'rxjs/operators';
+import { tap, startWith, delay } from 'rxjs/operators';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+import * as xlsx from 'xlsx';
+import * as FileSaver from 'file-saver';
+import { formatDate } from '@angular/common';
+
 import { EnvAppService } from '../env-app.service';
 import { TemperatureService } from '../service/temperature.service';
 import { TemperatureDataSource } from '../service/temperature.ds';
+
+import { StartFinish } from '../model/startfinish';
+import { DialogDatesSelectComponent } from '../dialog-dates-select/dialog-dates-select.component';
+import { DialogSheetFormatComponent } from '../dialog-sheet-format/dialog-sheet-format.component';
+import { TemperatureSheet } from '../model/temperature-sheet';
 
 @Component({
   selector: 'app-plume-t',
@@ -27,20 +35,37 @@ export class PlumeTComponent implements OnInit {
     public values: TemperatureDataSource;
     public year: number;
     public plume: number;
-  
+
+
     public displayedColumns: string[] = [
       'measured', 'tp', 'devname', 'vcc', 'vbat'
     ];
+
+    filterDeviceName = '';
   
     public expandedColumns: string[] = [
       'expandedDetail'
     ];
   
-    startDate = new Date(0);
-    finishDate = new Date();
-    filterDeviceName = '';
-  
+    private getStartFinish(startWith1970: boolean): StartFinish {
+      const d2 = Math.floor(new Date().getTime() / 1000);
+      let startFinish = new StartFinish(startWith1970 ? 0 : d2 - 86400, d2);
+      if (this.env.hasDate(this.filterStartDate)) {
+        let d = this.env.parseDate(this.filterStartDate);
+        d.setHours(0, 0, 0, 0);
+        startFinish.start = Math.floor(d.getTime() / 1000);
+      }
+
+      if (this.env.hasDate(this.filterFinishDate)) {
+        let d = this.env.parseDate(this.filterFinishDate);
+        d.setHours(23, 59, 59, 0);
+        startFinish.finish = Math.floor(d.getTime() / 1000);
+      }
+      return startFinish;
+    }
+    
     constructor(
+      private dialog: MatDialog,
       private activateRoute: ActivatedRoute,
       private env: EnvAppService,
       private temperatureService: TemperatureService,
@@ -76,20 +101,9 @@ export class PlumeTComponent implements OnInit {
   
     load() {
       const ofs = this.paginator.pageIndex * this.paginator.pageSize;
-      let startDate = 0;
-      let finishDate = Math.round(new Date().getTime() / 1000);
-      
-      if (this.startDate) {
-        this.startDate.setHours(0, 0, 0, 0);
-        startDate = Math.round(this.startDate.getTime() / 1000);
-      }
-      if (this.finishDate) {
-        this.finishDate.setHours(0, 0, 0, 0);
-        this.finishDate.setTime(this.finishDate.getTime() + 86400000);
-        finishDate = Math.round(this.finishDate.getTime() / 1000);
-      }
-      this.values.load(this.year + '-' + this.plume, startDate, finishDate, this.filterDeviceName, ofs, this.paginator.pageSize);
-      this.temperatureService.count(this.year + '-' + this.plume, startDate, finishDate, this.filterDeviceName).subscribe(
+      const sf = this.getStartFinish(true);
+      this.values.load(this.year + '-' + this.plume, sf.start, sf.finish, this.filterDeviceName, ofs, this.paginator.pageSize);
+      this.temperatureService.count(this.year + '-' + this.plume, sf.start, sf.finish, this.filterDeviceName).subscribe(
         value => {
           if (value) {
             this.paginator.length = value;
@@ -105,25 +119,17 @@ export class PlumeTComponent implements OnInit {
     }
   
     startChange(): void {
-      this.startDate = this.env.parseDate(this.filterStartDate);
       this.load();
     }
   
     finishChange(): void {
-      this.finishDate = this.env.parseDate(this.filterFinishDate);
-      this.finishDate.setTime(this.finishDate.getTime() + 86400000); // add one day
       this.load();
     }
   
     resetFilter(): void {
       this.filterDeviceName = '';
-      
-      this.startDate.setTime(0);
       this.filterStartDate.nativeElement.value = '';
-      
-      this.finishDate = new Date();
       this.filterFinishDate.nativeElement.value = '';
-      
       this.load();
     }
   
@@ -133,5 +139,67 @@ export class PlumeTComponent implements OnInit {
       else  
         element.expanded = !element.expanded
     }
+
+    saveSheet(startFinish: StartFinish): void
+    {
+      const kosaYearPrefix = this.year + '-' + this.plume;
+      // 32768 minus header
+      let rows = new Array<TemperatureSheet>();
+      this.temperatureService.list(kosaYearPrefix, startFinish.start, startFinish.finish, '',  0, 32767).subscribe(value => {
+        value.forEach(row => {
+          let s = new TemperatureSheet(row);
+          rows.push(s);
+        });
+        console.log(rows);
+        const worksheet = xlsx.utils.json_to_sheet(rows, { cellDates: true });
+
+        const workbook = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(workbook, worksheet, 'N' + kosaYearPrefix);
+        const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+        const d1 = new Date(startFinish.start * 1000);
+        const d2 = new Date(startFinish.finish * 1000);
+        const fn = formatDate(d1, 'dd.MM.yy', 'en-US') + '-' + formatDate(d2, 'dd.MM.yy', 'en-US');
+        FileSaver.saveAs(data, fn + '.xlsx');
+      });
+    }
+  
+    selectSheetTypeAndSaveSheets(startFinish: StartFinish) : void {
+      if (!this.env.settings.sheetType) {
+        const d = new MatDialogConfig();
+        d.autoFocus = true;
+        d.data = {
+          title: 'Выберите формат',
+          message: 'электронной таблицы',
+          sheetType: this.env.settings.sheetType
+        };
+        const dialogRef = this.dialog.open(DialogSheetFormatComponent, d);
+        dialogRef.componentInstance.selected.subscribe((value) => {
+          this.env.settings.sheetType = value;
+          this.saveSheet(startFinish);
+        });
+      } else {
+        this.saveSheet(startFinish);
+      }
+    }
+  
+    selectDateAndSaveSheet(): void 
+    {
+      const sf = this.getStartFinish(false);
+      const d = new MatDialogConfig();
+      d.autoFocus = true;
+      d.data = {
+        title: 'Установите даты',
+        message: 'Начальную и конечную',
+        startfinish: sf
+      };
+      const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
+      dialogRef.componentInstance.selected.subscribe((value) => {
+        sf.start = value.start;
+        sf.finish = value.finish;
+        this.selectSheetTypeAndSaveSheets(sf);
+      });
+    }
+  
   }
   

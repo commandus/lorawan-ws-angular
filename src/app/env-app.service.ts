@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Settings } from './model/settings';
-import { RGB6 } from './model/RGB6';
 
 import * as L from 'leaflet';
 import { Passport } from './model/passport';
@@ -57,9 +56,16 @@ export class EnvAppService {
     console.log(error);
   }
 
-  public parseDate(e: ElementRef) : Date {
+  public parseDate(e: ElementRef): Date {
     const parts = e.nativeElement.value.split(".");
-    return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+    if (parts.length >= 3)
+      return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+    return new Date();
+  }
+
+  public hasDate(e: ElementRef): boolean {
+    const parts = e.nativeElement.value.split(".");
+    return (parts.length >= 3);
   }
 
   showDashboard(): void {

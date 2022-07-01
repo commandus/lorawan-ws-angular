@@ -41,7 +41,7 @@ export class TemperatureService {
   }
 
   list(kosaYearPrefix: string, startDate: number, finishDate: number, devNamePrefix: string,
-    ofs: number, pagesize: number): Observable<any> {
+    ofs: number, pagesize: number): Observable<TemperatureRecord[]> {
     return this.httpClient.get<TemperatureRecord[]>(config.endpoint.t.url
       + this.mkQuery('?o=' + ofs + '&s=' + pagesize, kosaYearPrefix, startDate, finishDate, devNamePrefix))
       .pipe(
