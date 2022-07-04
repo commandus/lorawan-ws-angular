@@ -21,7 +21,6 @@ import { DialogSheetFormatComponent } from '../dialog-sheet-format/dialog-sheet-
 
 import * as xlsx from 'xlsx';
 import * as FileSaver from 'file-saver';
-import { formatDate } from '@angular/common';
 
 // import { DialogOrderComponent } from '../dialog-order/dialog-order.component';
 
@@ -45,12 +44,9 @@ export class PassportListComponent {
   public selectionMode = 0; // 0- manually selected, 1- select all, 2- unselect all
   public displayedColumns: string[] = ['id', 'name', 'modified', 'sensor-count', 'plume-t', 'download'];
 
-  year = 0;
-  plume = 0;
-  
-  savedSheetStartFinish = new StartFinish(this.env.today() - 86400, this.env.today());
-  savedWorkSheets = new Map<string, xlsx.WorkSheet>();
-  workSheetsCount = 0;
+  private savedSheetStartFinish = new StartFinish(this.env.today() - 86400, this.env.today());
+  private savedWorkSheets = new Map<string, xlsx.WorkSheet>();
+  private workSheetsCount = 0;
 
   constructor(
     public env: EnvAppService,
@@ -222,36 +218,46 @@ export class PassportListComponent {
     return this.selection.isSelected(v.id.year * 1000 + v.id.plume);
   }
   
-  saveWorkBook() {
+  saveWorkBook(typ: number) {
     const workbook = xlsx.utils.book_new();
+    const fn = this.env.getSheetFileName(this.savedSheetStartFinish);
+    if (typ == 6) {
+      // save to different files
+      for (let e of this.savedWorkSheets.entries()) {
+        const csv = xlsx.utils.sheet_to_csv(e[1], { strip: true });
+        const data:Blob = new Blob([csv], { type: this.env.MIME_CSV });
+        FileSaver.saveAs(data, fn + '-' + e[0] + '.csv');
+      }
+      return;
+    }
+
+    // save to one file
     for (let e of this.savedWorkSheets.entries()) {
       xlsx.utils.book_append_sheet(workbook, e[1], e[0]);
     }
     const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-    const d1 = new Date(this.savedSheetStartFinish.start * 1000);
-    const d2 = new Date(this.savedSheetStartFinish.finish * 1000);
-    const fn = formatDate(d1, 'd.M.yy', 'en-US') + '-' + formatDate(d2, 'd.M.yy', 'en-US');
+    const data:Blob = new Blob([excelBuffer], { type: this.env.MIME_XSLX});
     FileSaver.saveAs(data, fn + '.xlsx');
+
     this.savedWorkSheets.clear();
   }
 
-  saveSheet(year: number, plume: number, startfinish: StartFinish) : void
+  saveSheet(year: number, plume: number, startfinish: StartFinish, typ: number) : void
   {
     const kosaYearPrefix = year + '-' + plume;
-    
-    this.temperatureService.list(kosaYearPrefix, startfinish.start, startfinish.finish, '',  0, 0).subscribe(value => {
-      const worksheet = xlsx.utils.json_to_sheet(value);
-      this.savedWorkSheets.set('N' + year + '-' + plume, worksheet);
+    this.temperatureService.list(kosaYearPrefix, startfinish.start, startfinish.finish, '',  0, 32768).subscribe(value => {
+      const rows = this.env.tRecords2rows(value);
+      const worksheet = xlsx.utils.json_to_sheet(rows);
+      xlsx.utils.sheet_add_aoa(worksheet, this.env.getSheetHeading());
+        this.savedWorkSheets.set('N' + kosaYearPrefix, worksheet);
       if (this.savedWorkSheets.size == this.workSheetsCount) {
         // done
-        this.saveWorkBook();
+        this.saveWorkBook(typ);
       }
-      
     });
   }
 
-  saveSheets(): void
+  saveSheets(typ: number): void
   {
     this.savedWorkSheets.clear();
     switch (this.selectionMode) {
@@ -261,7 +267,7 @@ export class PassportListComponent {
         this.selection.selected.forEach(y1000p => {
           const year = Math.floor(y1000p / 1000);
           const plume = y1000p - (year * 1000);
-          this.saveSheet(year, plume, this.savedSheetStartFinish);
+          this.saveSheet(year, plume, this.savedSheetStartFinish, typ);
         });
         break;
       case 1:
@@ -269,7 +275,7 @@ export class PassportListComponent {
         this.passportService.list(0, 0, 0, 0).subscribe(values => {
           this.workSheetsCount = values.length;
           values.forEach(p => {
-            this.saveSheet(p.id.year, p.id.plume, this.savedSheetStartFinish);
+            this.saveSheet(p.id.year, p.id.plume, this.savedSheetStartFinish, typ);
           });
         });
         break;
@@ -288,10 +294,11 @@ export class PassportListComponent {
       const dialogRef = this.dialog.open(DialogSheetFormatComponent, d);
       dialogRef.componentInstance.selected.subscribe((value) => {
         this.env.settings.sheetType = value;
-        this.saveSheets();
+        this.env.settings.save();
+        this.saveSheets(value);
       });
     } else {
-      this.saveSheets();
+      this.saveSheets(this.env.settings.sheetType);
     }
   }
 

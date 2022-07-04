@@ -1,7 +1,6 @@
 import { fromEvent } from 'rxjs';
 import { tap, debounceTime, distinctUntilChanged, startWith, delay } from 'rxjs/operators';
 
-import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
@@ -18,6 +17,7 @@ import { TemperatureDataSource } from '../service/temperature.ds';
 import { StartFinish } from '../model/startfinish';
 import { DialogDatesSelectComponent } from '../dialog-dates-select/dialog-dates-select.component';
 import { DialogSheetFormatComponent } from '../dialog-sheet-format/dialog-sheet-format.component';
+import { TemperatureSheet } from '../model/temperature-sheet';
 
 // import { DialogOrderComponent } from '../dialog-order/dialog-order.component';
 
@@ -34,8 +34,8 @@ export class TemperatureComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   public values: TemperatureDataSource;
-  public year: number;
-  public plume: number;
+
+  private savedJson = new Map<number, TemperatureSheet[]>();
   
   public displayedColumns: string[] = [
     'measured', 'kosa-year', 'tp', 'devname', 'vcc', 'vbat'
@@ -65,16 +65,12 @@ export class TemperatureComponent implements OnInit {
   filterDeviceName = '';
 
   constructor(
-    private router: Router,
-    private activateRoute: ActivatedRoute,
     public env: EnvAppService,
     private temperatureService: TemperatureService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private snackBar: MatSnackBar
   ) {
-    this.year = activateRoute.snapshot.params['year'];
-    this.plume = activateRoute.snapshot.params['plume'];
     this.values = new TemperatureDataSource(this.temperatureService);
     
   }
@@ -157,22 +153,43 @@ export class TemperatureComponent implements OnInit {
       element.expanded = !element.expanded
   }
 
-  saveSheet(sf: StartFinish): void
-  {
-    this.temperatureService.list(this.filterKosaYear.nativeElement.value, sf.start, sf.finish, '',  0, 0).subscribe(value => {
-      const kosaYearPrefix = this.year + '-' + this.plume;
-      const worksheet = xlsx.utils.json_to_sheet(value);
+  orderAndSaveSheet(sf: StartFinish, typ: number): void {
+    // update date
+    this.filterStartDate.nativeElement.value = formatDate(new Date(sf.start * 1000), 'dd.MM.yyyy', 'en-US');
+    this.filterFinishDate.nativeElement.value = formatDate(new Date(sf.finish * 1000), 'dd.MM.yyyy', 'en-US');
+
+    this.temperatureService.list(this.filterKosaYear.nativeElement.value, sf.start, sf.finish, '',  0, 32768).subscribe(value => {
+        // convert to plain row
+      const rows = this.env.tRecords2rows(value);
+      // group rows by year-plume
+      rows.forEach(row => {
+        const k = row.year * 1000 + row.kosa;
+        if (this.savedJson.has(k)) {
+          const v = this.savedJson.get(k);
+          if (v)
+            v.push(row);
+        } else
+          this.savedJson.set(k, [row]);
+      });
       const workbook = xlsx.utils.book_new();
-      xlsx.utils.book_append_sheet(workbook, worksheet, 'N' + kosaYearPrefix);
-      const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-      const data: Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-      const d1 = new Date(sf.start * 1000);
-      const d2 = new Date(sf.finish * 1000);
-      const fn = formatDate(d1, 'd.M.yy', 'en-US') + '-' + formatDate(d2, 'd.M.yy', 'en-US');
-      FileSaver.saveAs(data, fn + '.xlsx');
-      // update date
-      this.filterStartDate.nativeElement.value = formatDate(new Date(sf.start * 1000), 'd.M.yyyy', 'en-US');
-      this.filterFinishDate.nativeElement.value = formatDate(new Date(sf.start * 1000), 'd.M.yyyy', 'en-US');
+      // save each group
+      for (let e of this.savedJson.entries()) {
+        const year = Math.floor(e[0] / 1000);
+        const plume = e[0] - year * 1000;
+        const kosaYearPrefix = year + '-' + plume;;  
+        const worksheet = xlsx.utils.json_to_sheet(e[1]);
+        const fn = this.env.getSheetFileName(sf);
+        if (typ == 6) {
+          const csv = xlsx.utils.sheet_to_csv(worksheet, { strip: true });
+          const data:Blob = new Blob([csv], { type: this.env.MIME_CSV });
+          FileSaver.saveAs(data, fn + '-' + kosaYearPrefix + '.csv');
+        } else {
+          xlsx.utils.book_append_sheet(workbook, worksheet, 'N' + kosaYearPrefix);
+          const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
+          const data: Blob = new Blob([excelBuffer], { type: this.env.MIME_XSLX });
+          FileSaver.saveAs(data, fn + '.xlsx');
+        }
+      }
     });
   }
 
@@ -188,10 +205,11 @@ export class TemperatureComponent implements OnInit {
       const dialogRef = this.dialog.open(DialogSheetFormatComponent, d);
       dialogRef.componentInstance.selected.subscribe((value) => {
         this.env.settings.sheetType = value;
-        this.saveSheet(sf);
+        this.env.settings.save();
+        this.orderAndSaveSheet(sf, value);
       });
     } else {
-      this.saveSheet(sf);
+      this.orderAndSaveSheet(sf, this.env.settings.sheetType);
     }
   }
 
@@ -212,5 +230,4 @@ export class TemperatureComponent implements OnInit {
       this.selectSheetTypeAndSaveSheets(sf);
     });
   }
-
 }

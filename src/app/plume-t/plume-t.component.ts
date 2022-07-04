@@ -1,7 +1,7 @@
 import { tap, startWith, delay } from 'rxjs/operators';
 
-import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -9,7 +9,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import * as xlsx from 'xlsx';
 import * as FileSaver from 'file-saver';
-import { formatDate } from '@angular/common';
 
 import { EnvAppService } from '../env-app.service';
 import { TemperatureService } from '../service/temperature.service';
@@ -18,14 +17,14 @@ import { TemperatureDataSource } from '../service/temperature.ds';
 import { StartFinish } from '../model/startfinish';
 import { DialogDatesSelectComponent } from '../dialog-dates-select/dialog-dates-select.component';
 import { DialogSheetFormatComponent } from '../dialog-sheet-format/dialog-sheet-format.component';
-import { TemperatureSheet } from '../model/temperature-sheet';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-plume-t',
   templateUrl: './plume-t.component.html',
   styleUrls: ['./plume-t.component.css']
 })
-export class PlumeTComponent implements OnInit {
+export class PlumeTComponent {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('startDate') filterStartDate: ElementRef;
   @ViewChild('finishDate') filterFinishDate: ElementRef;
@@ -74,9 +73,6 @@ export class PlumeTComponent implements OnInit {
       this.year = this.activateRoute.snapshot.params['year'];
       this.plume = this.activateRoute.snapshot.params['plume'];
       this.values = new TemperatureDataSource(this.temperatureService);
-    }
-  
-    ngOnInit() {
     }
   
     ngAfterViewInit() {
@@ -144,28 +140,23 @@ export class PlumeTComponent implements OnInit {
     {
       const kosaYearPrefix = this.year + '-' + this.plume;
       // 32768 minus header
-      let rows = new Array<TemperatureSheet>();
       this.temperatureService.list(kosaYearPrefix, startFinish.start, startFinish.finish, '',  0, 32767).subscribe(value => {
-        value.forEach(row => {
-          let s = new TemperatureSheet(row);
-          rows.push(s);
-        });
+        // convert to plain row
+        const rows = this.env.tRecords2rows(value);
+        // add spreadsheet
         const worksheet = xlsx.utils.json_to_sheet(rows);
-        const heading = [['№', 'Коса', 'Год', '№ пакета', 'Время измерения', 'Время записи', 'Vcc', 'Vbat', 'Пакет(ы)', 'Устройство', 'Адрес', 'Время получения']];
-        xlsx.utils.sheet_add_aoa(worksheet, heading);
+        xlsx.utils.sheet_add_aoa(worksheet, this.env.getSheetHeading());
         const workbook = xlsx.utils.book_new();
         xlsx.utils.book_append_sheet(workbook, worksheet, 'N' + kosaYearPrefix);
-
-        const d1 = new Date(startFinish.start * 1000);
-        const d2 = new Date(startFinish.finish * 1000);
-        const fn = formatDate(d1, 'dd.MM.yy', 'en-US') + '-' + formatDate(d2, 'dd.MM.yy', 'en-US');
+        // save to file (once)
+        const fn = this.env.getSheetFileName(startFinish);
         if (typ == 6) {
           const csv = xlsx.utils.sheet_to_csv(worksheet, { strip: true });
-          const data:Blob = new Blob([csv], { type: 'text/csv;charset=UTF-8' });
+          const data:Blob = new Blob([csv], { type: this.env.MIME_CSV });
           FileSaver.saveAs(data, fn + '.csv');
         } else {
           const excelBuffer: any = xlsx.write(workbook, { bookType: 'xlsx', type: 'array' });
-          const data:Blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+          const data:Blob = new Blob([excelBuffer], { type: this.env.MIME_XSLX });
           FileSaver.saveAs(data, fn + '.xlsx');
         }
       });
@@ -183,6 +174,7 @@ export class PlumeTComponent implements OnInit {
         const dialogRef = this.dialog.open(DialogSheetFormatComponent, d);
         dialogRef.componentInstance.selected.subscribe((value) => {
           this.env.settings.sheetType = value;
+          this.env.settings.save();
           this.saveSheet(startFinish, value);
         });
       } else {
@@ -202,8 +194,10 @@ export class PlumeTComponent implements OnInit {
       };
       const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
       dialogRef.componentInstance.selected.subscribe((value) => {
-        sf.start = value.start;
-        sf.finish = value.finish;
+        // update date
+        this.filterStartDate.nativeElement.value = formatDate(new Date(value.start * 1000), 'dd.MM.yyyy', 'en-US');
+        this.filterFinishDate.nativeElement.value = formatDate(new Date(value.finish * 1000), 'dd.MM.yyyy', 'en-US');
+        // select spreadsheet type
         this.selectSheetTypeAndSaveSheets(sf);
       });
     }

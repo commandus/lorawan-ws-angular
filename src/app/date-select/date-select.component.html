@@ -1,4 +1,4 @@
-<div>
+<form (submit)="select();">
 	<div class="dateform" fxLayout="column" fxLayoutAlign="stretch" >
 	<mat-form-field>
 		<input matInput [matDatepicker]="dpStart" placeholder="Начальная дата" [formControl]="startDate" >
@@ -11,7 +11,7 @@
 		<mat-datepicker #dpFinish></mat-datepicker>
 	</mat-form-field>
 	<div fxLayout="row" fxLayoutAlign="end stretch">
-		<button color="primary" mat-button (click)="select();">Выбрать</button>  
+		<button color="primary" mat-button>Выбрать</button>  
 	</div>
   </div>
-</div>
+</form>

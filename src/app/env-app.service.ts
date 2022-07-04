@@ -5,6 +5,10 @@ import { Settings } from './model/settings';
 
 import * as L from 'leaflet';
 import { Passport } from './model/passport';
+import { StartFinish } from './model/startfinish';
+import { formatDate } from '@angular/common';
+import { TemperatureRecord } from './model/temperaturerecord';
+import { TemperatureSheet } from './model/temperature-sheet';
 
 const attrOSM = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 const attrGoogle = '&copy; <a href="https://maps.google.com/">Google</a>';
@@ -15,9 +19,12 @@ const attrYandex = '&copy; <a href="https://yandex.net/">Yandex</a>';
 })
 export class EnvAppService {
   
-  version = '1.0';
-  map: any;
-  settings: Settings;
+  public MIME_CSV = 'text/csv;charset=UTF-8';
+  public MIME_XSLX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+
+  public version = '1.0';
+  public map: any;
+  public settings: Settings;
 
   private tiles = [
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -66,6 +73,24 @@ export class EnvAppService {
   public hasDate(e: ElementRef): boolean {
     const parts = e.nativeElement.value.split(".");
     return (parts.length >= 3);
+  }
+
+  public getSheetHeading(): string[][] {
+      return [['№', 'Коса', 'Год', '№ пакета', 'Время измерения', 'Время записи', 'Vcc', 'Vbat', 'Пакет(ы)', 'Устройство', 'Адрес', 'Время получения']];
+  }
+
+  public getSheetFileName(startFinish: StartFinish): string {
+      const d1 = new Date(startFinish.start * 1000);
+      const d2 = new Date(startFinish.finish * 1000);
+      return formatDate(d1, 'dd.MM.yy', 'en-US') + '-' + formatDate(d2, 'dd.MM.yy', 'en-US');
+  }
+
+  public tRecords2rows(value: TemperatureRecord[]) : TemperatureSheet[] {
+    let rows = new Array<TemperatureSheet>();
+    value.forEach(row => {
+      rows.push(new TemperatureSheet(row));
+    })
+    return rows;
   }
 
   showDashboard(): void {
