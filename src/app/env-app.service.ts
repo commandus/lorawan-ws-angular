@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { Settings } from './model/settings';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { formatDate } from '@angular/common';
 
 import * as L from 'leaflet';
+
 import { Passport } from './model/passport';
 import { StartFinish } from './model/startfinish';
-import { formatDate } from '@angular/common';
+import { Settings } from './model/settings';
 import { TemperatureRecord } from './model/temperaturerecord';
 import { TemperatureSheet } from './model/temperature-sheet';
+import { DialogSheetFormatComponent } from './dialog-sheet-format/dialog-sheet-format.component';
 
 const attrOSM = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 const attrGoogle = '&copy; <a href="https://maps.google.com/">Google</a>';
@@ -46,7 +49,10 @@ export class EnvAppService {
     'Yandex'
   ];
   
-  constructor(private router: Router) {
+  constructor(
+    private router: Router, 
+    private dialog: MatDialog,
+  ) {
     this.settings = new Settings(localStorage.getItem('settings'));
   }
 
@@ -73,6 +79,41 @@ export class EnvAppService {
   public hasDate(e: ElementRef): boolean {
     const parts = e.nativeElement.value.split(".");
     return (parts.length >= 3);
+  }
+
+  public selectSheetType(): void {
+    const d = new MatDialogConfig();
+    d.autoFocus = true;
+    d.data = {
+      title: 'Выберите формат',
+      message: 'электронной таблицы',
+      sheetType: this.settings.sheetType
+    };
+    const dialogRef = this.dialog.open(DialogSheetFormatComponent, d);
+    dialogRef.componentInstance.selected.subscribe((value) => {
+      this.settings.sheetType = value;
+      this.settings.save();
+    });
+  }
+
+  public filterExtract(kosaYearPrefix: string) {
+    let year = 0;
+    let kosa = 0;
+    if (kosaYearPrefix.length) {
+      const parts = kosaYearPrefix.split("-");
+      if (parts.length) {
+        if (parts.length >= 2) {
+          if (parts[0].length)
+            year = parseInt(parts[0]);
+          if (parts[1].length)
+             kosa = parseInt(parts[1]);
+        } else {
+          if (parts[0].length)
+            year = parseInt(parts[0]);
+        }
+      }
+    }
+    return [year, kosa] as const;
   }
 
   public getSheetHeading(): string[][] {

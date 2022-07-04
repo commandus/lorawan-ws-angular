@@ -109,26 +109,9 @@ export class PassportListComponent {
 
   load(): void {
     const ofs = this.paginator.pageIndex * this.paginator.pageSize;
-    const kosaYearPrefix = this.filterKosaYear.nativeElement.value;
-    let year = 0;
-    let kosa = 0;
-    if (kosaYearPrefix.length) {
-      const parts = kosaYearPrefix.split("-");
-      if (parts.length) {
-        if (parts.length >= 2) {
-          if (parts[0].length)
-            year = parts[0];
-          if (parts[1].length)
-             kosa = parts[1];
-        } else {
-          if (parts[0].length)
-            year = parts[0];
-        }
-      }
-    }
-
-    this.values.load(year, kosa, ofs, this.paginator.pageSize);
-    this.passportService.count(year, kosa).subscribe(
+    const [year, plume] = this.env.filterExtract(this.filterKosaYear.nativeElement.value);
+    this.values.load(year, plume, ofs, this.paginator.pageSize);
+    this.passportService.count(year, plume).subscribe(
       value => {
         if (value) {
           this.paginator.length = value;
@@ -142,7 +125,6 @@ export class PassportListComponent {
         console.error(error);
       });
   }
-
   
   resetFilter(): void {
     this.filterKosaYear.nativeElement.value = '';
@@ -272,7 +254,8 @@ export class PassportListComponent {
         break;
       case 1:
         // selected all
-        this.passportService.list(0, 0, 0, 0).subscribe(values => {
+        const [year, plume] = this.env.filterExtract(this.filterKosaYear.nativeElement.value);
+        this.passportService.list(year, plume, 0, 32768).subscribe(values => {
           this.workSheetsCount = values.length;
           values.forEach(p => {
             this.saveSheet(p.id.year, p.id.plume, this.savedSheetStartFinish, typ);

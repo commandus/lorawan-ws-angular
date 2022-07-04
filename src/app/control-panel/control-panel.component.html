@@ -4,6 +4,8 @@
 	</button>
 	<mat-menu #menu="matMenu">
 		<button mat-menu-item (click)="env.showDashboard()" >Начало</button>
+		<button mat-menu-item (click)="env.selectSheetType()" matTooltip="Выбрать формат электронной таблицы для скачивания" >Выбрать Excel/CSV</button>
+		
 		<!--
 		<div mat-menu-item>
 			Темный режим	
