@@ -1,7 +1,7 @@
 import { fromEvent } from 'rxjs';
 import { tap, debounceTime, distinctUntilChanged, startWith, delay } from 'rxjs/operators';
 
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -10,15 +10,16 @@ import * as xlsx from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { formatDate } from '@angular/common';
 
+import { StartFinish } from '../model/startfinish';
+import { TemperatureSheet } from '../model/temperature-sheet';
+
 import { EnvAppService } from '../env-app.service';
 import { TemperatureService } from '../service/temperature.service';
 import { TemperatureDataSource } from '../service/temperature.ds';
-import { StartFinish } from '../model/startfinish';
+
 import { DialogDatesSelectComponent } from '../dialog-dates-select/dialog-dates-select.component';
 import { DialogSheetFormatComponent } from '../dialog-sheet-format/dialog-sheet-format.component';
-import { TemperatureSheet } from '../model/temperature-sheet';
-
-// import { DialogOrderComponent } from '../dialog-order/dialog-order.component';
+import { DialogConfirmComponent } from '../dialog-confirm/dialog-confirm.component';
 
 @Component({
   selector: 'app-temperature',
@@ -34,8 +35,6 @@ export class TemperatureComponent {
 
   public values: TemperatureDataSource;
 
-  private savedJson = new Map<number, TemperatureSheet[]>();
-  
   public displayedColumns: string[] = [
     'measured', 'kosa-year', 'tp', 'devname', 'vcc', 'vbat'
   ];
@@ -150,21 +149,22 @@ export class TemperatureComponent {
     this.filterFinishDate.nativeElement.value = formatDate(new Date(sf.finish * 1000), 'dd.MM.yyyy', 'en-US');
 
     this.temperatureService.list(this.filterKosaYear.nativeElement.value, sf.start, sf.finish, '',  0, 32768).subscribe(value => {
-        // convert to plain row
+      const savedJson = new Map<number, TemperatureSheet[]>();
+      // convert to plain row
       const rows = this.env.tRecords2rows(value);
       // group rows by year-plume
       rows.forEach(row => {
         const k = row.year * 1000 + row.kosa;
-        if (this.savedJson.has(k)) {
-          const v = this.savedJson.get(k);
+        if (savedJson.has(k)) {
+          const v = savedJson.get(k);
           if (v)
             v.push(row);
         } else
-          this.savedJson.set(k, [row]);
+          savedJson.set(k, [row]);
       });
       const workbook = xlsx.utils.book_new();
       // save each group
-      for (let e of this.savedJson.entries()) {
+      for (let e of savedJson.entries()) {
         const year = Math.floor(e[0] / 1000);
         const plume = e[0] - year * 1000;
         const kosaYearPrefix = year + '-' + plume;;  
@@ -221,4 +221,51 @@ export class TemperatureComponent {
       this.selectSheetTypeAndSaveSheets(sf);
     });
   }
+
+  public selectDateAndRemove(): void 
+  {
+    const sf = this.getStartFinish(false);
+    const d = new MatDialogConfig();
+    d.autoFocus = true;
+    d.data = {
+      title: 'Безвозвратно удалить записи',
+      message: 'Укажите период, в котором записи будут удалены',
+      startfinish: sf
+    };
+    const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
+    dialogRef.componentInstance.selected.subscribe((value) => {
+      sf.start = value.start;
+      sf.finish = value.finish;
+      this.rmStartFinish(sf);
+    });
+  }
+
+  private rmStartFinish(sf: StartFinish): void {
+    const d = new MatDialogConfig();
+    d.autoFocus = true;
+    d.disableClose = false;
+    d.data = {
+      title: 'Удалить записи?',
+      message: 'Восстановить будет невозможно.'
+    };
+    const dialogRef = this.dialog.open(DialogConfirmComponent, d);
+    dialogRef.afterClosed().subscribe(
+        data => {
+          if (data.yes) {
+            this.rmI(sf);
+          }
+        }
+    );
+}
+
+private rmI(sf: StartFinish): void {
+  this.temperatureService.rm(sf).subscribe(
+    value => {
+      this.load();
+    },
+    error => {
+      this.env.onError(error);
+    });
+}
+
 }

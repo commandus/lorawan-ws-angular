@@ -7,7 +7,7 @@
 	</mat-form-field>
 	<button color="primary" mat-button (click)="refresh()">Обновить</button>  
 	<button mat-button (click)="resetFilter()">Сбросить</button>  
-	<button color="accent" matTooltip="Скачать выбранные паспорта в файл" mat-button (click)="saveFile()">Файл паспортов</button>
+	<button matTooltip="Скачать выбранные паспорта в файл" mat-button (click)="saveFile()">Файл паспортов</button>
 </div>
 
 <div>
@@ -60,7 +60,7 @@
   <div>
 	<button mat-button (click)="selectAll(true)">Выбрать все</button>
 	<button mat-button (click)="selectAll(false)">Снять выделение</button>  
-	<button color="accent" matTooltip="Скачать выбранные измерения в файл" mat-button (click)="selectDateAndSaveSheet()">Скачать</button>
+	<button color="primary" matTooltip="Скачать выбранные измерения в файл" mat-button (click)="selectDateAndSaveSheet()">Скачать</button>
   </div>
 
 </div>

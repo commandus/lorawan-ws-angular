@@ -17,7 +17,7 @@
 	</mat-form-field>
 
 	<button color="primary" mat-button (click)="load()">Обновить</button>  
-	<button color="accent" mat-button (click)="resetFilter()">Сбросить</button>  
+	<button mat-button (click)="resetFilter()">Сбросить</button>  
 </div>
 
 <div>
@@ -65,6 +65,6 @@
   <mat-paginator [pageSize]="100"></mat-paginator>
 </div>
 <div>
-	<button color="accent" matTooltip="Скачать в файл" mat-button (click)="selectDateAndSaveSheet()">Скачать</button>
+	<button color="primary" matTooltip="Скачать в файл" mat-button (click)="selectDateAndSaveSheet()">Скачать</button>
  </div>
 

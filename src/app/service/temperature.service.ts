@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { TemperatureRecord } from '../model/temperaturerecord';
 import { ResponseCount } from '../model/responsecount';
+import { StartFinish } from '../model/startfinish';
 
 import { config } from '../config';
 
@@ -67,8 +68,10 @@ export class TemperatureService {
     return this.httpClient.post(config.endpoint.t.url, value);
   }
 
-  rm(id: number): Observable<any> {
-    return this.httpClient.delete(config.endpoint.t.url + '?id=' + id);
+  rm(sf: StartFinish): Observable<any> {
+    return this.httpClient.delete(config.endpoint.t.url 
+      + '&received-ge=' + sf.start + '&received-le=' + sf.finish);
+
   }
 
   update(value: TemperatureRecord): Observable<any> {

@@ -62,6 +62,7 @@ import { EmployeeLoginComponent } from './employee-login/employee-login.componen
 import { DialogDatesSelectComponent } from './dialog-dates-select/dialog-dates-select.component';
 import { DialogSheetFormatComponent } from './dialog-sheet-format/dialog-sheet-format.component';
 import { DialogLoginComponent } from './dialog-login/dialog-login.component';
+import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
 
 
 @NgModule({
@@ -84,6 +85,7 @@ import { DialogLoginComponent } from './dialog-login/dialog-login.component';
         DialogDatesSelectComponent,
         DialogSheetFormatComponent,
         DialogLoginComponent,
+        DialogConfirmComponent
     ],
     imports: [
         BrowserModule,
@@ -117,6 +119,12 @@ import { DialogLoginComponent } from './dialog-login/dialog-login.component';
             provide: MatPaginatorIntl,
             useClass: MatPaginatorIntlRu
         }
+    ],
+    entryComponents: [
+        DialogDatesSelectComponent,
+        DialogSheetFormatComponent,
+        DialogLoginComponent,
+        DialogConfirmComponent
     ],
     bootstrap: [AppComponent]
 })
