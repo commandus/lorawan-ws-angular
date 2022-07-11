@@ -58,8 +58,10 @@ import { FileNamePipe } from './pipe-file-name';
 import { PlumeTComponent } from './plume-t/plume-t.component';
 import { PlumeSensorComponent } from './plume-sensor/plume-sensor.component';
 import { DateSelectComponent } from './date-select/date-select.component';
+import { EmployeeLoginComponent } from './employee-login/employee-login.component';
 import { DialogDatesSelectComponent } from './dialog-dates-select/dialog-dates-select.component';
 import { DialogSheetFormatComponent } from './dialog-sheet-format/dialog-sheet-format.component';
+import { DialogLoginComponent } from './dialog-login/dialog-login.component';
 
 
 @NgModule({
@@ -78,8 +80,10 @@ import { DialogSheetFormatComponent } from './dialog-sheet-format/dialog-sheet-f
         PlumeTComponent,
         PlumeSensorComponent,
         DateSelectComponent,
+        EmployeeLoginComponent,
         DialogDatesSelectComponent,
-        DialogSheetFormatComponent
+        DialogSheetFormatComponent,
+        DialogLoginComponent,
     ],
     imports: [
         BrowserModule,

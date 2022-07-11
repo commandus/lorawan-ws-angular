@@ -15,15 +15,16 @@ export class AuthenticationInterceptor implements HttpInterceptor {
   ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    let token = '';
-    if (typeof this.auth !== 'undefined') {
-      token = this.auth.employee.id + ';' + this.auth.employee.token;
+    if (this.auth.employee.token.length == 0) {
+      return next.handle(req);
     }
+
     const request = req.clone({
       setHeaders: {
-        Authentication: `${token}`
+        Authorization: `Bearer ${this.auth.employee.token}`
       }
     });
+
     return next.handle(request).pipe(
         tap((event: HttpEvent<any>) => {
         if (event instanceof HttpResponse) {

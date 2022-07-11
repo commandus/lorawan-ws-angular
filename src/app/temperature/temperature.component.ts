@@ -5,7 +5,6 @@ import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@an
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import * as xlsx from 'xlsx';
 import * as FileSaver from 'file-saver';
@@ -26,7 +25,7 @@ import { TemperatureSheet } from '../model/temperature-sheet';
   templateUrl: './temperature.component.html',
   styleUrls: ['./temperature.component.css']
 })
-export class TemperatureComponent implements OnInit {
+export class TemperatureComponent {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('startDate') filterStartDate: ElementRef;
   @ViewChild('finishDate') filterFinishDate: ElementRef;
@@ -68,14 +67,10 @@ export class TemperatureComponent implements OnInit {
     public env: EnvAppService,
     private temperatureService: TemperatureService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
-    private snackBar: MatSnackBar
+    private cdr: ChangeDetectorRef
   ) {
     this.values = new TemperatureDataSource(this.temperatureService);
     
-  }
-
-  ngOnInit() {
   }
 
   ngAfterViewInit() {
@@ -119,11 +114,7 @@ export class TemperatureComponent implements OnInit {
         }
       },
       error => {
-        let snackBarRef = this.snackBar.open('Сервис временно недоступен', 'Повторить');
-        snackBarRef.onAction().subscribe(() => {
-          this.load();
-        });
-        console.error(error);
+        this.env.onError(error, this);
       });
   }
 

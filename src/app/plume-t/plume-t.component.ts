@@ -5,7 +5,6 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import * as xlsx from 'xlsx';
 import * as FileSaver from 'file-saver';
@@ -67,8 +66,7 @@ export class PlumeTComponent {
       private dialog: MatDialog,
       private activateRoute: ActivatedRoute,
       private env: EnvAppService,
-      private temperatureService: TemperatureService,
-      private snackBar: MatSnackBar
+      private temperatureService: TemperatureService
     ) {
       this.year = this.activateRoute.snapshot.params['year'];
       this.plume = this.activateRoute.snapshot.params['plume'];
@@ -106,11 +104,7 @@ export class PlumeTComponent {
           }
         },
         error => {
-          let snackBarRef = this.snackBar.open('Сервис временно недоступен', 'Повторить');
-          snackBarRef.onAction().subscribe(() => {
-            this.load();
-          });
-          console.error(error);
+          this.env.onError(error, this);
         });
     }
   

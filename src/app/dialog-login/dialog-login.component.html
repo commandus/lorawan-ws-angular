@@ -1,0 +1,6 @@
+<h2 mat-dialog-title>{{title}}</h2>
+<p></p>
+<div>
+  <app-employee-login [employee]="employee" (logged)="onLogged($event)" (cancelled)="onCancel()">
+  </app-employee-login>
+</div>

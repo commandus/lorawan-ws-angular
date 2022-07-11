@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { formatDate } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import * as L from 'leaflet';
 
 import { Passport } from './model/passport';
 import { StartFinish } from './model/startfinish';
 import { Settings } from './model/settings';
+import { Employee } from './model/employee';
+import { Reload } from './model/reload';
+
 import { TemperatureRecord } from './model/temperaturerecord';
 import { TemperatureSheet } from './model/temperature-sheet';
 import { DialogSheetFormatComponent } from './dialog-sheet-format/dialog-sheet-format.component';
+import { DialogLoginComponent } from './dialog-login/dialog-login.component';
+import { AuthenticationService } from './service/authentication.service';
 
 const attrOSM = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 const attrGoogle = '&copy; <a href="https://maps.google.com/">Google</a>';
@@ -22,12 +28,18 @@ const attrYandex = '&copy; <a href="https://yandex.net/">Yandex</a>';
 })
 export class EnvAppService {
   
+  
   public MIME_CSV = 'text/csv;charset=UTF-8';
   public MIME_XSLX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
 
-  public version = '1.0';
+  public version = '1.1';
   public map: any;
   public settings: Settings;
+  employee: Employee;
+
+  public hasAccount(): boolean {
+    return this.employee && (this.employee.token.length > 0);
+  }
 
   private tiles = [
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -52,8 +64,11 @@ export class EnvAppService {
   constructor(
     private router: Router, 
     private dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private authenticationService: AuthenticationService
   ) {
     this.settings = new Settings(localStorage.getItem('settings'));
+    this.employee = new Employee(localStorage.getItem('employee'));
   }
 
   public menu: string;
@@ -64,9 +79,60 @@ export class EnvAppService {
     d.setHours(0,0,0,0);
     return d.getTime() / 1000;
   }
+  
+  public login(self?: Reload) {
+    const d = new MatDialogConfig();
+    d.autoFocus = true;
+    d.data = {
+      title: 'Введите логин и пароль',
+      message: 'для входа',
+      employee: this.employee
+    };
+    const dialogRef = this.dialog.open(DialogLoginComponent, d);
+    dialogRef.componentInstance.logged.subscribe((value: Employee) => {
 
-  public onError(error: any): void {
-    console.log(error);
+      if (value.token && value.token.length) {
+        this.employee = value;
+        localStorage.setItem('employee', JSON.stringify(this.employee));
+        this.settings.save();
+        this.authenticationService.load();
+        if (self)
+          self.load();
+      } else {
+        this.logout(self);
+        this.authenticationService.load();
+      }
+    });
+  }
+
+  public logout(self?: Reload) {
+    this.employee.logout();
+    this.authenticationService.load();
+    if (self)
+      self.load();
+  }
+
+  public onError(error: any, self?: Reload): void 
+  {
+    const code = error.status;
+
+    const actionName = 'Повторить';
+    let description : string;
+    if (code == 401)
+        description = 'Требуется авторизация';
+    else        
+        description = 'Сервис временно недоступен';
+
+    let snackBarRef = this.snackBar.open(description, actionName);
+    if (self) {
+      snackBarRef.onAction().subscribe(() => {
+        if (code == 401)
+          this.login(self);
+        else
+          self.load();
+      });
+    }
+    console.error(code);
   }
 
   public parseDate(e: ElementRef): Date {

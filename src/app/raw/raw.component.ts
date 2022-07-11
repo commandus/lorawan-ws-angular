@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 import { RawRecord } from '../model/rawrecord';
@@ -13,9 +13,6 @@ import { RawRecord } from '../model/rawrecord';
 import { EnvAppService } from '../env-app.service';
 import { RawService } from '../service/raw.service';
 import { RawDataSource } from '../service/raw.ds';
-
-// import { DialogOrderComponent } from '../dialog-order/dialog-order.component';
-
 
 @Component({
   selector: 'app-raw',
@@ -45,8 +42,7 @@ export class RawComponent {
     private env: EnvAppService,
     private rawService: RawService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef,
-    private snackBar: MatSnackBar
+    private cdr: ChangeDetectorRef
   ) {
     this.values = new RawDataSource(this.rawService);
   }
@@ -102,11 +98,7 @@ export class RawComponent {
         }
       },
       error => {
-        let snackBarRef = this.snackBar.open('Сервис временно недоступен', 'Повторить');
-        snackBarRef.onAction().subscribe(() => {
-          this.load();
-        });
-        console.error(error);
+        this.env.onError(error, this);
       });
   }
 

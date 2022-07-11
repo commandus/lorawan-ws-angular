@@ -15,6 +15,7 @@ import { PassportDataSource } from '../service/passport.ds.service';
 import { PassportService } from '../service/passport.service';
 import { Passport, PlumeId } from '../model/passport';
 import { StartFinish } from '../model/startfinish';
+import { Reload } from '../model/reload';
 import { TemperatureService } from '../service/temperature.service';
 import { DialogDatesSelectComponent } from '../dialog-dates-select/dialog-dates-select.component';
 import { DialogSheetFormatComponent } from '../dialog-sheet-format/dialog-sheet-format.component';
@@ -34,7 +35,7 @@ class dumbCollectionViewer implements CollectionViewer {
   templateUrl: './passport-list.component.html',
   styleUrls: ['./passport-list.component.css']
 })
-export class PassportListComponent {
+export class PassportListComponent implements Reload {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('filterKosaYear') filterKosaYear: ElementRef;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -118,11 +119,7 @@ export class PassportListComponent {
         }
       },
       error => {
-        let snackBarRef = this.snackBar.open('Сервис временно недоступен', 'Повторить');
-        snackBarRef.onAction().subscribe(() => {
-          this.load();
-        });
-        console.error(error);
+        this.env.onError(error, this);
       });
   }
   
@@ -132,7 +129,7 @@ export class PassportListComponent {
     this.load();
   }
 
-  reload(): void {
+  refresh(): void {
     this.paginator.pageIndex = 0;
     this.load();
   }

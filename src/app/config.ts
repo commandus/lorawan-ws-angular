@@ -1,6 +1,9 @@
 const host = 'http://84.237.104.128:5002/';
 export const config = {
   endpoint: {
+    token: {
+      url: host + 'token'
+    },
     raw: {
       url: host + 'raw'
     },

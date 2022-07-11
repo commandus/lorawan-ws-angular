@@ -3,7 +3,11 @@
 		<mat-icon>more_vert</mat-icon>
 	</button>
 	<mat-menu #menu="matMenu">
-		<button mat-menu-item (click)="env.showDashboard()" >Начало</button>
+		<button mat-menu-item (click)="env.showDashboard()" >Начальная страницв</button>
+		<button mat-menu-item (click)="env.login()">Войти</button>
+		<ng-container *ngIf="env.hasAccount()">
+			<button mat-menu-item (click)="env.logout()">Выйти</button>
+		</ng-container>
 		<button mat-menu-item (click)="env.selectSheetType()" matTooltip="Выбрать формат электронной таблицы для скачивания" >Выбрать Excel/CSV</button>
 		
 		<!--

@@ -1,0 +1,20 @@
+<mat-progress-bar *ngIf="progress" mode="indeterminate"></mat-progress-bar>
+<form #orderForm="ngForm" [formGroup]="formGroup" (ngSubmit)="login()">
+    <div *ngIf="!this.progress">
+    <div fxLayout="row" fxLayoutAlign="space-around center" [style.color]="success ? 'green' : 'red'">
+      {{message}}
+    </div>
+    <div fxLayout="column" fxLayoutAlign="stretch" >
+      <mat-form-field>
+          <input matInput type="text" placeholder="логин" autocomplete="username" formControlName="login">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="password" placeholder="Пароль" autocomplete="current-password" formControlName="password">
+      </mat-form-field>
+      <div fxLayout="row" fxLayoutAlign="end stretch">
+          <button mat-button (click)="cancel()">Отменить</button>  
+          <button color="primary" mat-button type="submit">Войти</button>  
+      </div>
+    </div>
+  </div>
+</form>
