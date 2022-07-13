@@ -8,6 +8,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./dialog-dates-select.component.css']
 })
 export class DialogDatesSelectComponent {
+  @Output() cancelled = new EventEmitter<void>();
   @Output() selected = new EventEmitter<StartFinish>();
   title: string;
   message: string;
@@ -36,5 +37,10 @@ export class DialogDatesSelectComponent {
       this.selected.emit(v);
       this.dialogRef.close({yes: true});
     }
+  }
+
+  onCancelled() {
+    this.cancelled.emit();
+    this.dialogRef.close({yes: false});
   }
 }

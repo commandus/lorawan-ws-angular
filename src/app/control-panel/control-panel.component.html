@@ -3,19 +3,30 @@
 		<mat-icon>more_vert</mat-icon>
 	</button>
 	<mat-menu #menu="matMenu">
-		<button mat-menu-item (click)="env.showDashboard()" >Начальная страницв</button>
-		<button mat-menu-item (click)="env.login()">Войти</button>
-		<ng-container *ngIf="env.hasAccount()">
-			<button mat-menu-item (click)="env.logout()">Выйти</button>
-		</ng-container>
-		<button mat-menu-item (click)="env.selectSheetType()" matTooltip="Выбрать формат электронной таблицы для скачивания" >Выбрать Excel/CSV</button>
+		<button mat-menu-item (click)="env.showDashboard()"><mat-icon>home</mat-icon></button>
+		<button mat-menu-item (click)="env.showDevices()">Устройства</button>
+		<button mat-menu-item (click)="env.showConfig()">Конфигурация</button>
+		<button mat-menu-item (click)="env.showPlans()">Частотные планы</button>
+		<button mat-menu-item (click)="env.showDbs()">СУБД</button>
+		<button mat-menu-item (click)="env.showStatGateway()">Статистика шлюза</button>
+		<button mat-menu-item (click)="env.showStatDevice()">Статистика устройств</button>
 		
+		<mat-divider></mat-divider>
+		<button mat-menu-item (click)="env.selectSheetType()" matTooltip="Выбрать формат электронной таблицы для скачивания" >Выбрать Excel/CSV</button>
 		<!--
 		<div mat-menu-item>
 			Темный режим	
 			<mat-slide-toggle [(ngModel)]="env.darkMode"></mat-slide-toggle>
 		</div>
 		-->
+		<mat-divider></mat-divider>
+		<ng-container *ngIf="!env.hasAccount()">
+			<button mat-menu-item (click)="env.login()">Войти</button>
+		</ng-container>
+		<ng-container *ngIf="env.hasAccount()">
+			<button mat-menu-item (click)="env.login()">Войти с другим аккаунтом</button>
+			<button mat-menu-item (click)="env.logout()">Выйти</button>
+		</ng-container>
 	</mat-menu>
 	<button [color]="env.menuColor('passports')" mat-button matTooltip="Паспорта кос" (click)="env.showPassportList()"><mat-icon>folder_open</mat-icon></button>  
 	<button [color]="env.menuColor('raw')" mat-button matTooltip="Пакеты" (click)="env.showRaw()"><mat-icon>output</mat-icon></button>  

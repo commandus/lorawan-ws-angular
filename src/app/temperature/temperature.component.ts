@@ -228,8 +228,8 @@ export class TemperatureComponent {
     const d = new MatDialogConfig();
     d.autoFocus = true;
     d.data = {
-      title: 'Безвозвратно удалить записи',
-      message: 'Укажите период, в котором записи будут удалены',
+      title: 'Удалить записи',
+      message: 'Задайте удаляемый период',
       startfinish: sf
     };
     const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);

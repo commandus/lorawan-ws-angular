@@ -33,6 +33,24 @@ export const config = {
     },
     passportFile: {
       url: host + 'passport-file'
+    },
+    about: {
+      url: host + 'about'
+    },
+    config: {
+      url: host + 'config'
+    },
+    dbs: {
+      url: host + 'databases'
+    },
+    plan: {
+      url: host + 'plans'
+    },
+    statdevice: {
+      url: host + 'device-stat'
+    },
+    statgw: {
+      url: host + 'gateway-stat'
     }
   }
 };

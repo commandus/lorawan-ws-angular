@@ -63,6 +63,12 @@ import { DialogDatesSelectComponent } from './dialog-dates-select/dialog-dates-s
 import { DialogSheetFormatComponent } from './dialog-sheet-format/dialog-sheet-format.component';
 import { DialogLoginComponent } from './dialog-login/dialog-login.component';
 import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
+import { ConfigNsComponent } from './config-ns/config-ns.component';
+import { ConfigDevicesComponent } from './config-devices/config-devices.component';
+import { ConfigPlansComponent } from './config-plans/config-plans.component';
+import { ConfigDbsComponent } from './config-dbs/config-dbs.component';
+import { StatGatewayComponent } from './stat-gateway/stat-gateway.component';
+import { StatDeviceComponent } from './stat-device/stat-device.component';
 
 
 @NgModule({
@@ -85,7 +91,13 @@ import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.componen
         DialogDatesSelectComponent,
         DialogSheetFormatComponent,
         DialogLoginComponent,
-        DialogConfirmComponent
+        DialogConfirmComponent,
+        ConfigNsComponent,
+        ConfigDevicesComponent,
+        ConfigPlansComponent,
+        ConfigDbsComponent,
+        StatGatewayComponent,
+        StatDeviceComponent
     ],
     imports: [
         BrowserModule,

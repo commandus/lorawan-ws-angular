@@ -1,0 +1,52 @@
+<div>
+	<button color="primary" mat-button (click)="load()">Обновить</button>  
+</div>
+
+<table mat-table [dataSource]="values" matSort>
+	<ng-container matColumnDef="time">
+		<th mat-header-cell *matHeaderCellDef> Время </th>
+		<td mat-cell *matCellDef="let v">{{s2t(v.time) | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
+	</ng-container>
+	<ng-container matColumnDef="name">
+		<th mat-header-cell *matHeaderCellDef> Имя </th>
+		<td mat-cell *matCellDef="let v"><b>{{v.name}}</b></td>
+	</ng-container>
+	<ng-container matColumnDef="gwid">
+		<th mat-header-cell *matHeaderCellDef> Шлюз </th>
+		<td mat-cell *matCellDef="let v">{{v.gwid}}</td>
+	</ng-container>
+	<ng-container matColumnDef="addr">
+		<th mat-header-cell *matHeaderCellDef> Адрес </th>
+		<td mat-cell *matCellDef="let v">{{v.addr}}</td>
+	</ng-container>
+	<ng-container matColumnDef="geo">
+		<th mat-header-cell *matHeaderCellDef> Координаты </th>
+		<td mat-cell *matCellDef="let v">({{v.lati | number: '1.4-4'}}, {{v.long | number: '1.4-4'}}, {{v.alti | number: '1.0-0'}})</td>
+	</ng-container>
+	<ng-container matColumnDef="rxnb">
+		<th mat-header-cell *matHeaderCellDef> Получено </th>
+		<td mat-cell *matCellDef="let v">{{v.rxnb}}</td>
+	</ng-container>
+	<ng-container matColumnDef="rxok">
+		<th mat-header-cell *matHeaderCellDef> CRC OK </th>
+		<td mat-cell *matCellDef="let v">{{v.rxok}}</td>
+	</ng-container>
+	<ng-container matColumnDef="rxfw">
+		<th mat-header-cell *matHeaderCellDef> Пересл. </th>
+		<td mat-cell *matCellDef="let v">{{v.rxfw}}</td>
+	</ng-container>
+	<ng-container matColumnDef="ackr">
+		<th mat-header-cell *matHeaderCellDef> % с ACK </th>
+		<td mat-cell *matCellDef="let v">{{v.ackr}}</td>
+	</ng-container>
+	<ng-container matColumnDef="dwnb">
+		<th mat-header-cell *matHeaderCellDef> К отправке </th>
+		<td mat-cell *matCellDef="let v">{{v.dwnb}}</td>
+	</ng-container>
+	<ng-container matColumnDef="txnb">
+		<th mat-header-cell *matHeaderCellDef> Отправлено </th>
+		<td mat-cell *matCellDef="let v">{{v.txnb}}</td>
+	</ng-container>
+	<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+	<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

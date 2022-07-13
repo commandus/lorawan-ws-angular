@@ -9,6 +9,7 @@ import { FormControl } from '@angular/forms';
 })
 export class DateSelectComponent implements OnInit {
   @Output() selected = new EventEmitter<StartFinish>();
+  @Output() cancelled = new EventEmitter<void>();
   @Input() start: number;
   @Input() finish: number;
 
@@ -22,6 +23,10 @@ export class DateSelectComponent implements OnInit {
   ngOnInit() {
     this.startDate = new FormControl(typeof this.start === 'undefined' ? new Date() : new Date(this.start * 1000));
     this.finishDate = new FormControl(typeof this.finish === 'undefined' ? new Date() : new Date(this.finish * 1000));
+  }
+
+  cancel(): void {
+    this.cancelled.emit();
   }
 
   select(): void {

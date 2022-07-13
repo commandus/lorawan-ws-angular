@@ -1,0 +1,79 @@
+<div class="ls">
+	<div class="p">Имя файла конфигурации</div>
+	<div class="v">{{value.configFileName}}</div>
+	
+	<div class="p">Имя файла списка шлюзов</div>
+	<div class="v">{{value.gatewaysFileName}}</div>
+	
+	<div class="p">Имя файла СУБД</div>
+	<div class="v">{{value.databaseConfigFileName}}</div>
+	
+	<div class="p">Дополнительные файлы конфигурации (каталоги паспортов)</div>
+	<div class="v" *ngFor="let it of value.databaseExtraConfigFileNames">
+		{{it}}
+	</div>
+
+	<div class="p">Интерфейсы</div>
+	<div class="v" *ngFor="let it of value.server.listenAddressIPv4">
+		{{it}}
+	</div>
+	<div class="v" *ngFor="let it of value.server.listenAddressIPv6">
+		{{it}}
+	</div>
+	<div class="p">Файл устройств</div>
+	<div class="v">{{value.server.identityStorageName}}</div>
+
+	<div class="p">Файл истории устройств</div>
+	<div class="v">{{value.server.deviceHistoryStorageName}}</div>
+
+	<div class="p">Тип хранилища региональных параметров</div>
+	<div class="v">{{value.server.regionalSettingsStorageName}}</div>
+
+	<div class="p">Имя частотного плана</div>
+	<div class="v">{{value.server.regionalSettingsChannelPlanName}}</div>
+
+	<div class="p">Файл очереди входящих пакетов</div>
+	<div class="v">{{value.server.queueStorageName}}</div>
+
+	<div class="p">Размер входного UDP буфера</div>
+	<div class="v">{{value.server.readBufferSize}}</div>
+
+	<div class="p">Уровень подробности журнала</div>
+	<div class="v">{{value.server.verbosity}}</div>
+
+	<div class="p">controlFPort</div>
+	<div class="v">{{value.server.controlFPort}}</div>
+
+	<div class="p">Запускать как демон</div>
+	<div class="v">{{value.server.daemonize}}</div>
+
+    <div class="p">Тип хранилища</div>
+	<div class="v">{{value.server.storageType}}</div>
+
+    <div class="p">Тип хранилища статистики шлюзов</div>
+	<div class="v">{{value.server.gwStatStorageType}}</div>
+
+	<div class="p">Файл хранилища статистики шлюзов</div>
+	<div class="v">{{value.server.logGWStatisticsFileName}}</div>
+
+	<div class="p">Тип хранилища статистики устройств</div>
+	<div class="v">{{value.server.deviceStatStorageType}}</div>
+
+	<div class="p">Файл хранилища статистики устройств</div>
+	<div class="v">{{value.server.logDeviceStatisticsFileName}}</div>
+
+	<div class="p">Тип выходной очереди</div>
+	<div class="v">{{value.server.messageQueueStorageType}}</div>
+
+    <div class="p">Net id</div>
+	<div class="v">{{value.server.netId}}</div>
+
+	<div class="p">Имя СУБД логгера</div>
+	<div class="v">{{value.loggerDatabaseName}}</div>
+
+	<div class="p">Каталог с proto файлами</div>
+	<div class="v">{{value.protoPath}}</div>
+
+	<div class="p">Порт для шлюза</div>
+	<div class="v">{{value.gatewayPort}}</div>
+</div>	

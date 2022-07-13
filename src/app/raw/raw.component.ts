@@ -243,15 +243,15 @@ export class RawComponent {
     const d = new MatDialogConfig();
     d.autoFocus = true;
     d.data = {
-      title: 'Безвозвратно удалить пакеты',
-      message: 'Укажите период, в котором записи будут удалены',
+      title: 'Удалить пакеты?',
+      message: 'Задайте удаляемый период',
       startfinish: sf
     };
     const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
-    dialogRef.componentInstance.selected.subscribe((value) => {
-      sf.start = value.start;
-      sf.finish = value.finish;
-      this.rmStartFinish(sf);
+    dialogRef.componentInstance.selected.subscribe(value => {
+        sf.start = value.start;
+        sf.finish = value.finish;
+        this.rmStartFinish(sf);
     });
   }
 

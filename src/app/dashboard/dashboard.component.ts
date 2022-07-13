@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
+import { Version } from '../model/version';
+import { VersionService } from '../service/version.service';
 import { EnvAppService } from '../env-app.service';
 
 @Component({
@@ -6,16 +9,18 @@ import { EnvAppService } from '../env-app.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
-
+export class DashboardComponent implements OnInit {
+  public version: Version;
   constructor(
-    private env: EnvAppService
+    private env: EnvAppService,
+    public versionService: VersionService
   ) {
 
   }
-
-  load(): void {
-    console.log('Reload');
+  ngOnInit(): void {
+    this.versionService.list().subscribe((value) => {
+      this.version = value;
+    });
   }
 
 }

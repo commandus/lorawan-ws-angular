@@ -240,6 +240,36 @@ export class EnvAppService {
     this.menu = 'plume-sensor';
   }
 
+  showConfig(): void {
+    this.router.navigateByUrl('/config');
+    this.menu = '';
+  }
+
+  showDevices(): void {
+    this.router.navigateByUrl('/devices');
+    this.menu = '';
+  }
+
+  showPlans(): void {
+    this.router.navigateByUrl('/plans');
+    this.menu = '';
+  }
+
+  showDbs(): void {
+    this.router.navigateByUrl('/dbs');
+    this.menu = '';
+  }
+  
+  showStatDevice(): void {
+    this.router.navigateByUrl('/devicestat');
+    this.menu = '';
+  }
+  
+  showStatGateway(): void {
+    this.router.navigateByUrl('/gwstat');
+    this.menu = '';
+  }
+  
   public menuColor(menuName: string): string {
     if (menuName == this.menu)
       return 'primary';
