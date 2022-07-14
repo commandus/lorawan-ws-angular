@@ -1,7 +1,7 @@
 import { tap, startWith, delay } from 'rxjs/operators';
 
 import { ActivatedRoute } from '@angular/router';
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -23,7 +23,7 @@ import { formatDate } from '@angular/common';
   templateUrl: './plume-t.component.html',
   styleUrls: ['./plume-t.component.css']
 })
-export class PlumeTComponent {
+export class PlumeTComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('startDate') filterStartDate: ElementRef;
   @ViewChild('finishDate') filterFinishDate: ElementRef;
@@ -68,12 +68,16 @@ export class PlumeTComponent {
       private env: EnvAppService,
       private temperatureService: TemperatureService
     ) {
+    }
+
+    ngOnInit(): void {
       this.year = this.activateRoute.snapshot.params['year'];
       this.plume = this.activateRoute.snapshot.params['plume'];
       this.values = new TemperatureDataSource(this.temperatureService);
     }
   
     ngAfterViewInit() {
+
       this.paginator.page
         .pipe(
           startWith(null),
@@ -178,7 +182,7 @@ export class PlumeTComponent {
   
     selectDateAndSaveSheet(): void 
     {
-      const sf = this.getStartFinish(false);
+      let sf = this.getStartFinish(false);
       const d = new MatDialogConfig();
       d.autoFocus = true;
       d.data = {
@@ -189,6 +193,7 @@ export class PlumeTComponent {
       const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
       dialogRef.componentInstance.selected.subscribe((value) => {
         // update date
+        sf = value;
         this.filterStartDate.nativeElement.value = formatDate(new Date(value.start * 1000), 'dd.MM.yyyy', 'en-US');
         this.filterFinishDate.nativeElement.value = formatDate(new Date(value.finish * 1000), 'dd.MM.yyyy', 'en-US');
         // select spreadsheet type

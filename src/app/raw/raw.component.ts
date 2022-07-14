@@ -221,7 +221,7 @@ export class RawComponent {
 
   selectDateAndSaveSheet(): void 
   {
-    const sf = this.getStartFinish(false);
+    let sf = this.getStartFinish(false);
     const d = new MatDialogConfig();
     d.autoFocus = true;
     d.data = {
@@ -231,15 +231,14 @@ export class RawComponent {
     };
     const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
     dialogRef.componentInstance.selected.subscribe((value) => {
-      sf.start = value.start;
-      sf.finish = value.finish;
+      sf = value;
       this.selectSheetTypeAndSaveSheets(sf);
     });
   }
 
   public selectDateAndRemove(): void 
   {
-    const sf = this.getStartFinish(false);
+    let sf = this.getStartFinish(false);
     const d = new MatDialogConfig();
     d.autoFocus = true;
     d.data = {
@@ -249,8 +248,7 @@ export class RawComponent {
     };
     const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);
     dialogRef.componentInstance.selected.subscribe(value => {
-        sf.start = value.start;
-        sf.finish = value.finish;
+        sf = value;
         this.rmStartFinish(sf);
     });
   }
