@@ -1,1 +1,156 @@
-<p>config-plans works!</p>
+<div>
+	<button color="primary" mat-button (click)="load()">Обновить</button>  
+</div>
+
+<table mat-table [dataSource]="values" matSort>
+	<ng-container matColumnDef="id">
+		<th mat-header-cell *matHeaderCellDef> № </th>
+		<td mat-cell *matCellDef="let v">{{ v.id }}</td>
+	</ng-container>
+	<ng-container matColumnDef="name">
+		<th mat-header-cell *matHeaderCellDef> Имя </th>
+		<td mat-cell *matCellDef="let v">{{ v.name }}</td>
+	</ng-container>
+	<ng-container matColumnDef="cn">
+		<th mat-header-cell *matHeaderCellDef> Название </th>
+		<td mat-cell *matCellDef="let v"><b>{{v.cn}}</b></td>
+	</ng-container>
+
+	<ng-container matColumnDef="maxUplinkEIRP">
+		<th mat-header-cell *matHeaderCellDef> EIRP </th>
+		<td mat-cell *matCellDef="let v">{{v.maxUplinkEIRP}}</td>
+	</ng-container>
+	<ng-container matColumnDef="pingSlotFrequency">
+		<th mat-header-cell *matHeaderCellDef> Частота ping </th>
+		<td mat-cell *matCellDef="let v">{{v.pingSlotFrequency / 1000000}}</td>
+	</ng-container>
+	<ng-container matColumnDef="defaultDownlinkTXPower">
+		<th mat-header-cell *matHeaderCellDef> Мощность </th>
+		<td mat-cell *matCellDef="let v">{{v.defaultDownlinkTXPower}}</td>
+	</ng-container>
+
+	<ng-container matColumnDef="implementsTXParamSetup">
+		<th mat-header-cell *matHeaderCellDef> Управление </th>
+		<td mat-cell *matCellDef="let v"><mat-slide-toggle [disabled]="true" [checked]="v.implementsTXParamSetup"></mat-slide-toggle></td>
+	</ng-container>
+	<ng-container matColumnDef="supportsExtraChannel">
+		<th mat-header-cell *matHeaderCellDef> Доп. каналы </th>
+		<td mat-cell *matCellDef="let v"><mat-slide-toggle [disabled]="true" [checked]="v.supportsExtraChannel"></mat-slide-toggle></td>
+	</ng-container>
+	<ng-container matColumnDef="defaultRegion">
+		<th mat-header-cell *matHeaderCellDef> По умолчанию </th>
+		<td mat-cell *matCellDef="let v"><mat-slide-toggle [disabled]="true" [checked]="v.defaultRegion"></mat-slide-toggle></td>
+	</ng-container>
+	<ng-container matColumnDef="RX2Frequency">
+		<th mat-header-cell *matHeaderCellDef> RX2 частота</th>
+		<td mat-cell *matCellDef="let v">{{v.bandDefaults.RX2Frequency / 1000000}}</td>
+	</ng-container>
+	<ng-container matColumnDef="RX2DataRate">
+		<th mat-header-cell *matHeaderCellDef> скорость </th>
+		<td mat-cell *matCellDef="let v">{{v.bandDefaults.RX2DataRate}}</td>
+	</ng-container>
+	<ng-container matColumnDef="ReceiveDelay1">
+		<th mat-header-cell *matHeaderCellDef> Окно 1 </th>
+		<td mat-cell *matCellDef="let v">{{v.bandDefaults.ReceiveDelay1}}</td>
+	</ng-container>
+	<ng-container matColumnDef="ReceiveDelay2">
+		<th mat-header-cell *matHeaderCellDef> 2 </th>
+		<td mat-cell *matCellDef="let v">{{v.bandDefaults.ReceiveDelay2}}</td>
+	</ng-container>
+	<ng-container matColumnDef="JoinAcceptDelay1">
+		<th mat-header-cell *matHeaderCellDef> Join окно 1 </th>
+		<td mat-cell *matCellDef="let v">{{v.bandDefaults.JoinAcceptDelay1}}</td>
+	</ng-container>
+	<ng-container matColumnDef="JoinAcceptDelay2">
+		<th mat-header-cell *matHeaderCellDef> 2 </th>
+		<td mat-cell *matCellDef="let v">{{v.bandDefaults.JoinAcceptDelay2}}</td>
+	</ng-container>
+	<ng-container matColumnDef="dataRates">
+		<th mat-header-cell *matHeaderCellDef> Скорость </th>
+		<td mat-cell *matCellDef="let v">
+			<ng-container *ngFor="let it of v.dataRates">
+				{{it.bandwidth}}SF{{it.spreadingFactor}}
+			</ng-container>
+		</td>
+	</ng-container>
+	<ng-container matColumnDef="uplinkChannels">
+		<th mat-header-cell *matHeaderCellDef> Uplink </th>
+		<td mat-cell *matCellDef="let v">
+			<ng-container *ngFor="let it of v.uplinkChannels">
+				{{it.frequency / 1000000}} {{it.minDR}}-{{it.maxDR}}
+			</ng-container>
+		</td>
+	</ng-container>
+	<ng-container matColumnDef="downlinkChannels">
+		<th mat-header-cell *matHeaderCellDef> Downlink </th>
+		<td mat-cell *matCellDef="let v">
+			<ng-container *ngFor="let it of v.downlinkChannels">
+				{{it.frequency / 1000000}} {{it.minDR}}-{{it.maxDR}}
+			</ng-container>
+		</td>
+	</ng-container>
+
+	<ng-container matColumnDef="maxPayloadSizePerDataRate">
+		<th mat-header-cell *matHeaderCellDef> Макс. байт </th>
+		<td mat-cell *matCellDef="let v">
+			<ng-container *ngFor="let it of v.maxPayloadSizePerDataRate">
+				{{it.m}}({{it.n}})
+			</ng-container>
+		</td>
+	</ng-container>
+	<ng-container matColumnDef="maxPayloadSizePerDataRateRepeater">
+		<th mat-header-cell *matHeaderCellDef> через репитор</th>
+		<td mat-cell *matCellDef="let v">
+			<ng-container *ngFor="let it of v.maxPayloadSizePerDataRateRepeater">
+				{{it.m}}({{it.n}})
+			</ng-container>
+		</td>
+	</ng-container>
+	<ng-container matColumnDef="rx1DataRateOffsets">
+		<th mat-header-cell *matHeaderCellDef> Смещение скорости </th>
+		<td mat-cell *matCellDef="let v">
+			<ng-container *ngFor="let it of v.rx1DataRateOffsets">
+				(
+				<ng-container *ngFor="let it2 of it">
+					{{it2}}
+				</ng-container>
+				)
+			</ng-container>
+		</td>
+	</ng-container>
+	<ng-container matColumnDef="txPowerOffsets">
+		<th mat-header-cell *matHeaderCellDef> Смещение мощности</th>
+		<td mat-cell *matCellDef="let v">
+			<ng-container *ngFor="let it of v.txPowerOffsets">
+				{{it}}
+			</ng-container>
+		</td>
+	</ng-container>
+
+	
+	<!--
+	
+	<ng-container matColumnDef="password">
+		<th mat-header-cell *matHeaderCellDef> password </th>
+		<td mat-cell *matCellDef="let v">{{v.password}}</td>
+	</ng-container>
+	<ng-container matColumnDef="db">
+		<th mat-header-cell *matHeaderCellDef> db </th>
+		<td mat-cell *matCellDef="let v">{{v.db}}</td>
+	</ng-container>
+	<ng-container matColumnDef="table_aliases">
+		<th mat-header-cell *matHeaderCellDef> Алиасы таблиц </th>
+		<td mat-cell *matCellDef="let v">{{v.table_aliases}}</td>
+	</ng-container>
+	<ng-container matColumnDef="field_aliases">
+		<th mat-header-cell *matHeaderCellDef> Алиасы полей </th>
+		<td mat-cell *matCellDef="let v">{{v.field_aliases}}</td>
+	</ng-container>
+	<ng-container matColumnDef="properties">
+		<th mat-header-cell *matHeaderCellDef> Свойства </th>
+		<td mat-cell *matCellDef="let v">{{v.properties}}</td>
+	</ng-container>
+	-->
+	<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+	<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

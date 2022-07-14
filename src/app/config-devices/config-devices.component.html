@@ -1,1 +1,61 @@
-<p>config-devices works!</p>
+<div>
+	<button color="primary" mat-button (click)="load()">Обновить</button>  
+</div>
+
+<table mat-table [dataSource]="values" matSort>
+	<ng-container matColumnDef="name">
+		<th mat-header-cell *matHeaderCellDef> Имя </th>
+		<td mat-cell *matCellDef="let v">{{ v.name }}</td>
+	</ng-container>
+	<ng-container matColumnDef="addr">
+		<th mat-header-cell *matHeaderCellDef> Адрес </th>
+		<td mat-cell *matCellDef="let v"><b>{{ v.addr }}</b></td>
+	</ng-container>
+	<ng-container matColumnDef="activation">
+		<th mat-header-cell *matHeaderCellDef> Тип </th>
+		<td mat-cell *matCellDef="let v">{{v.activation}}</td>
+	</ng-container>
+	<ng-container matColumnDef="deviceClass">
+		<th mat-header-cell *matHeaderCellDef> Класс </th>
+		<td mat-cell *matCellDef="let v">{{v.deviceClass}}</td>
+	</ng-container>
+	<ng-container matColumnDef="version">
+		<th mat-header-cell *matHeaderCellDef> Версия </th>
+		<td mat-cell *matCellDef="let v">{{v.version}}</td>
+	</ng-container>
+	<ng-container matColumnDef="devEUI">
+		<th mat-header-cell *matHeaderCellDef> devEUI </th>
+		<td mat-cell *matCellDef="let v">{{v.devEUI}}</td>
+	</ng-container>
+	<ng-container matColumnDef="appEUI">
+		<th mat-header-cell *matHeaderCellDef> appEUI </th>
+		<td mat-cell *matCellDef="let v">{{v.appEUI}}</td>
+	</ng-container>
+	<ng-container matColumnDef="nwkSKey">
+		<th mat-header-cell *matHeaderCellDef> nwkSKey </th>
+		<td mat-cell *matCellDef="let v">{{v.nwkSKey}}</td>
+	</ng-container>
+	<ng-container matColumnDef="appSKey">
+		<th mat-header-cell *matHeaderCellDef> appSKey </th>
+		<td mat-cell *matCellDef="let v">{{v.appSKey}}</td>
+	</ng-container>
+	<ng-container matColumnDef="appKey">
+		<th mat-header-cell *matHeaderCellDef> appKey </th>
+		<td mat-cell *matCellDef="let v">{{v.appKey}}</td>
+	</ng-container>
+	<ng-container matColumnDef="nwkKey">
+		<th mat-header-cell *matHeaderCellDef> nwkKey </th>
+		<td mat-cell *matCellDef="let v">{{v.nwkKey}}</td>
+	</ng-container>
+	
+	<ng-container matColumnDef="nonce">
+		<th mat-header-cell *matHeaderCellDef> nonce </th>
+		<td mat-cell *matCellDef="let v">{{v.nonce}}</td>
+	</ng-container>
+	<ng-container matColumnDef="joinNonce">
+		<th mat-header-cell *matHeaderCellDef> joinNonce </th>
+		<td mat-cell *matCellDef="let v">{{v.joinNonce}}</td>
+	</ng-container>
+	<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+	<tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

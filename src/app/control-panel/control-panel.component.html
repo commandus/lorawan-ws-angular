@@ -4,10 +4,12 @@
 	</button>
 	<mat-menu #menu="matMenu">
 		<button mat-menu-item (click)="env.showDashboard()"><mat-icon>home</mat-icon></button>
-		<button mat-menu-item (click)="env.showDevices()">Устройства</button>
+		<mat-divider></mat-divider>
 		<button mat-menu-item (click)="env.showConfig()">Конфигурация</button>
+		<button mat-menu-item (click)="env.showDevices()">Устройства</button>
 		<button mat-menu-item (click)="env.showPlans()">Частотные планы</button>
 		<button mat-menu-item (click)="env.showDbs()">СУБД</button>
+		<mat-divider></mat-divider>
 		<button mat-menu-item (click)="env.showStatGateway()">Статистика шлюза</button>
 		<button mat-menu-item (click)="env.showStatDevice()">Статистика устройств</button>
 		

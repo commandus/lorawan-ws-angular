@@ -25,6 +25,9 @@ export const config = {
     gateways: {
       url: host + 'gateways'
     },
+    devices: {
+      url: host + 'devices'
+    },
     passport: {
       url: host + 'passport'
     },

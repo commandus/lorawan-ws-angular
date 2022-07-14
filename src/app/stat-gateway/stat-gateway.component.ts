@@ -37,8 +37,6 @@ export class StatGatewayComponent implements OnInit {
     const fminus = v.lastIndexOf('-');
     const f = fplus > fminus ? fplus : fminus;
     const p = v.split(v[f]);
-    console.log(p[0]);
-    console.log(p[1]);
     let d = new Date(p[0]).getTime();
     d += parseInt(p[1]) * 60 * 60 * 1000;
     return new Date(d);

@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { config } from '../config';
-import { Plan } from '../model/plan';
+import { RegionBand, RegionParameters } from '../model/plan';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,12 @@ import { Plan } from '../model/plan';
 export class PlanService {
   constructor(private httpClient: HttpClient) { }
 
-  list(): Observable<Plan> {
+  list(): Observable<RegionBand[]> {
     const u = config.endpoint.plan.url;
-    return this.httpClient.get<Plan>(u);
+    return this.httpClient.get<RegionParameters>(u).pipe(
+      map((response: RegionParameters) => {
+          return response.RegionBands;
+      })
+    );
   }
 }

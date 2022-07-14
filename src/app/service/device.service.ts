@@ -12,7 +12,7 @@ export class DeviceService {
   constructor(private httpClient: HttpClient) { }
 
   list(): Observable<Device[]> {
-    const u = config.endpoint.plan.url;
+    const u = config.endpoint.devices.url;
     return this.httpClient.get<Device[]>(u);
   }
 }
