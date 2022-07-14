@@ -132,7 +132,6 @@ export class EnvAppService {
           self.load();
       });
     }
-    console.error(code);
   }
 
   public parseDate(e: ElementRef): Date {

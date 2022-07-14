@@ -229,7 +229,7 @@ export class TemperatureComponent {
     d.autoFocus = true;
     d.data = {
       title: 'Удалить записи',
-      message: 'Задайте удаляемый период',
+      message: 'Задайте период измерений',
       startfinish: sf
     };
     const dialogRef = this.dialog.open(DialogDatesSelectComponent, d);

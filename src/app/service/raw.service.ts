@@ -59,7 +59,7 @@ export class RawService {
 
   rm(sf:StartFinish): Observable<any> {
     return this.httpClient.delete(config.endpoint.raw.url 
-      + '&received-ge=' + sf.start + '&received-le=' + sf.finish);
+      + '?received-ge=' + sf.start + '&received-le=' + sf.finish);
   }
 
   update(value: RawRecord): Observable<any> {

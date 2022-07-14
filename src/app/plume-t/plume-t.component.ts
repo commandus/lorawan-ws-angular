@@ -182,7 +182,7 @@ export class PlumeTComponent {
       const d = new MatDialogConfig();
       d.autoFocus = true;
       d.data = {
-        title: 'Установите даты',
+        title: 'Укажите даты измерения',
         message: 'Начальную и конечную',
         startfinish: sf
       };

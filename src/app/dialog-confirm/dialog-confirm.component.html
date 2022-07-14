@@ -1,11 +1,11 @@
-<form>
+<form (submit)="ok();">
   <h2 mat-dialog-title>{{title}}</h2>
   <p></p>
   <div>
     {{message}}
   </div>
   <mat-dialog-actions fxLayout="row" fxLayoutAlign="end stretch">
-      <button class="mat-button"(click)="cancel()">Нет</button>
-      <button type="submit" class="mat-button mat-primary"(click)="ok()">Да</button>
+      <button type='button' mat-button (click)="cancel()">Нет</button>  
+      <button color="primary" mat-button cdkFocusInitial>Да</button>  
   </mat-dialog-actions>
 </form>

@@ -70,7 +70,7 @@ export class TemperatureService {
 
   rm(sf: StartFinish): Observable<any> {
     return this.httpClient.delete(config.endpoint.t.url 
-      + '&received-ge=' + sf.start + '&received-le=' + sf.finish);
+      + '?measured-ge=' + sf.start + '&measured-le=' + sf.finish);
 
   }
 
