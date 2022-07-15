@@ -1,4 +1,4 @@
-const host = 'http://84.237.104.128:5002/';
+const host = window.location.origin + '/';
 export const config = {
   endpoint: {
     token: {
