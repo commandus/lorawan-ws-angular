@@ -104,5 +104,8 @@
       }
     }
   },
-  "defaultProject": "lorawan-ws-angular"
+  "defaultProject": "lorawan-ws-angular",
+  "cli": {
+    "analytics": false
+  }
 }
